@@ -21,7 +21,6 @@ def std(x):
  
  
  def midpoint(x): 
-    
     n = len(x)
     if n % 2 == 0: 
         median = (x[n/2] + x[n/2 + 1])/float(2)
