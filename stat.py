@@ -28,3 +28,9 @@ def std(x):
     else: 
         median = x[(n-1)/2]
         return median
+
+
+def standard_error(x,n): 
+    sigma = std(x)
+    n = math.sqrt(n)
+    return sigma/float(n)
