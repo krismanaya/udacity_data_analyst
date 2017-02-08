@@ -4,7 +4,8 @@ import math
 # x is defined as a list of data points or the mean depending on the defenition it's provided. 
 # z is the z-score primarly they z-score for the 95 or 98% (CI)
 # x_bar is a sample mean withint the normal distribution
-# n is the sample size for the normal distribution 
+# n is the sample size for the normal distribution, excpet in the midpoint function where it is the length. 
+
 
 
 def mode(x): 
