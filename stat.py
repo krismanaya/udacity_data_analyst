@@ -1,5 +1,12 @@
 import math
 
+
+# x is defined as a list of data points or the mean depending on the defenition it's provided. 
+# z is the z-score primarly they z-score for the 95 or 98% (CI)
+# x_bar is a sample mean withint the normal distribution
+# n is the sample size for the normal distribution 
+
+
 def mode(x): 
     mode_list = []
     for number in x: 
@@ -37,3 +44,12 @@ def standard_error(x,n):
     sigma = std(x)
     n = math.sqrt(n)
     return sigma/float(n)
+
+
+def confidence_interval(x,n,x_bar,z): 
+    SE = standard_error(x,n)
+    return(x_bar-(z*SE),x_bar+(z*SE))
+
+
+def z_score(x_bar,x,sigma): 
+    return(x_bar-x)/float(sigma)
