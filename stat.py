@@ -1,4 +1,5 @@
 import math
+import pandas as pd
 
 
 # x is defined as a list of data points or the mean depending on the defenition it's provided. 
@@ -6,10 +7,18 @@ import math
 # x_bar is a sample mean withint the normal distribution
 # n is the sample size for the normal distribution, excpet in the midpoint function where it is the length. 
 
+
+
+def make_a_list(): 
+    """Easier way to copy an excel column and make it into a list."""
+    #df = pd.read_clipboard(header=None)
+    x = [i for i in df[0]]
+    return x 
+
 def mode(x): 
     mode_list = []
     for number in x: 
-        mode_list.append(number,x.count(number))  
+        mode_list.append((x.count(number),int(number)))  
     return max(mode_list)
 
 def mean(x): 
