@@ -8,20 +8,23 @@ import pandas as pd
 # n is the sample size for the normal distribution, excpet in the midpoint function where it is the length. 
 
 
-
 def make_a_list(): 
+    #Make x
     """Easier way to copy an excel column and make it into a list."""
-    #df = pd.read_clipboard(header=None)
+    df = pd.read_clipboard(header=None)
     x = [i for i in df[0]]
     return x 
 
-def mode(x): 
+def mode(x):
+    #x is a list
+    """the left hand side is the count of numbers and the right is the greatest number in the histogram."""
     mode_list = []
     for number in x: 
-        mode_list.append((x.count(number),int(number)))  
+        mode_list.append((x.count(number),number))  
     return max(mode_list)
 
-def mean(x): 
+def mean(x):
+    #x is a list  
     sum = 0 
     average = 0 
     for i in x: 
@@ -29,7 +32,8 @@ def mean(x):
         average = sum/float(len(x))
     return average
 
-def std(x): 
+def std(x):
+    #x is a list  
     sum = 0 
     variance = 0 
     std = 0 
@@ -40,6 +44,7 @@ def std(x):
     return std
  
 def midpoint(x): 
+    #x is a list
     n = len(x)
     if n % 2 == 0: 
         median = (x[n/2] + x[n/2 + 1])/float(2)
@@ -49,15 +54,52 @@ def midpoint(x):
         return median
 
 def standard_error(x,n): 
+    #x is a list and n is a sample
     sigma = std(x)
     n = math.sqrt(n)
     return sigma/float(n)
 
 
-def confidence_interval(x,n,x_bar,z): 
-    SE = standard_error(x,n)
+def confidence_interval(x_bar,z,s,n):
+    #x_bar is a sample mean, z or t is the margin of error  score, s is the standard deviation 
+    # and n is the sample size
+    SE = s/float(math.sqrt(n))
     return(x_bar-(z*SE),x_bar+(z*SE))
 
 
 def z_score(x_bar,x,sigma): 
+    #x_bar is a sample mean, x is a mean and sigma is the standard deviation 
     return(x_bar-x)/float(sigma)
+
+def t_stat(x_bar,x,s,n):
+    #x_bar is a sample mean, x is a mean, s is the standard deviation and n is the sample size
+    SE = s/float(math.sqrt(n)) 
+    return(x_bar-x)/SE
+
+def cohens_d(x_bar,x,s): 
+    #s := as the standard deviation of the sample mean x_bar. 
+    d = (x_bar-x)/float(s)
+    return d
+
+def difference(x,y): 
+    """this function takes two lists x and y respectively and outputs the difference as a list."""
+    diff = []
+    for i,j in zip(x,y): 
+        diff.append(i-j)
+    return diff 
+
+def bessels_correction(x):
+    #x is a list
+    sum = 0 
+    variance = 0 
+    S = 0 
+    for i in x: 
+        sum += (i-mean(x))**2
+        variance = sum/float(len(x)-1)
+        S = math.sqrt(variance)
+    return S
+
+def degrees_of_freedom(x):
+    #x is a list  
+    """the left hand side is the sample and the right is the DOF."""
+    return (len(x),len(x)-1)
