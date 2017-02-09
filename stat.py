@@ -6,8 +6,6 @@ import math
 # x_bar is a sample mean withint the normal distribution
 # n is the sample size for the normal distribution, excpet in the midpoint function where it is the length. 
 
-
-
 def mode(x): 
     mode_list = []
     for number in x: 
