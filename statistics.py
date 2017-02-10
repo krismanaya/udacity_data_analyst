@@ -1,12 +1,11 @@
+
 import math
 import pandas as pd
-
 
 # x is defined as a list of data points or the mean depending on the defenition it's provided. 
 # z is the z-score primarly they z-score for the 95 or 98% (CI)
 # x_bar is a sample mean withint the normal distribution
 # n is the sample size for the normal distribution, excpet in the midpoint function where it is the length. 
-
 
 def make_a_list(): 
     #Make x
@@ -59,13 +58,15 @@ def standard_error(x,n):
     n = math.sqrt(n)
     return sigma/float(n)
 
+def margin_error(z,s,n): 
+    """always calculate the the margin of error on a two-tailed test."""
+    return z*(s/float(math.sqrt(n)))
 
 def confidence_interval(x_bar,z,s,n):
     #x_bar is a sample mean, z or t is the margin of error  score, s is the standard deviation 
     # and n is the sample size
     SE = s/float(math.sqrt(n))
     return(x_bar-(z*SE),x_bar+(z*SE))
-
 
 def z_score(x_bar,x,sigma): 
     #x_bar is a sample mean, x is a mean and sigma is the standard deviation 
@@ -103,3 +104,11 @@ def degrees_of_freedom(x):
     #x is a list  
     """the left hand side is the sample and the right is the DOF."""
     return (len(x),len(x)-1)
+
+def r_squared(x_bar,x,s,n): 
+    """this is for the t-test r squared were we look at the degrees of freedom"""
+    t = t_stat(x_bar,x,s,n) #this is the t-statistic 
+    df = (n-1) #this is the degrees of freed of the sample size. 
+    r_squared = t**2/(t**2 + df) #this is r^2  
+    return r_squared 
+
