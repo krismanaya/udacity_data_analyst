@@ -90,9 +90,10 @@ def independent_standard_error(x_1,x_2,n_1,n_2):
 def corrected_standard_error(x_1,x_2,n_1,n_2): 
     """Corrected standard error using the pooled variance"""
     s_p = pooled_variance(x_1,x_2)
+    df_1 = n_1 - 1
+    df_2 = n_2 - 1 
     SE = math.sqrt(s_p/n_1 + s_p/n_2)
     return SE 
-
 
 def margin_error(z,s,n): 
     """always calculate the the margin of error on a two-tailed test."""
