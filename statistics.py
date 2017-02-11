@@ -31,6 +31,20 @@ def mean(x):
         average = sum/float(len(x))
     return average
 
+def variance(x): 
+    sum = 0
+    for i in x: 
+        sum += (i-mean(x))**2
+    return sum
+
+def pooled_variance(x_1,x_2): 
+    ss_1 = variance(x_1)
+    ss_2 = variance(x_2)
+    df_1 = len(x_1)-1
+    df_2 = len(x_2)-1
+    return (ss_1 + ss_2)/(df_1 + df_2) 
+
+
 def std(x):
     #x is a list  
     sum = 0 
@@ -38,9 +52,14 @@ def std(x):
     std = 0 
     for i in x: 
         sum += (i-mean(x))**2 
-        variance = sum/float(len(x))
+        variance = sum/len(x)
         std = math.sqrt(variance)
     return std
+
+def std_indy(x_1,x_2): 
+    s_1 = std(x_1)
+    s_2 = std(x_2) 
+    return math.sqrt(s_1**2 + s_2**2)
  
 def midpoint(x): 
     #x is a list
@@ -58,6 +77,23 @@ def standard_error(x,n):
     n = math.sqrt(n)
     return sigma/float(n)
 
+def standard_sample_error(x,n): 
+    sigma = bessels_correction(x)
+    n = math.sqrt(n)
+    return sigma/float(n)
+
+def independent_standard_error(x_1,x_2,n_1,n_2): 
+    s_1 = bessels_correction(x_1)
+    s_2 = bessels_correction(x_2)
+    return math.sqrt(s_1**2/float(n_1) + s_2**2/float(n_2))
+
+def corrected_standard_error(x_1,x_2,n_1,n_2): 
+    """Corrected standard error using the pooled variance"""
+    s_p = pooled_variance(x_1,x_2)
+    SE = math.sqrt(s_p/n_1 + s_p/n_2)
+    return SE 
+
+
 def margin_error(z,s,n): 
     """always calculate the the margin of error on a two-tailed test."""
     return z*(s/float(math.sqrt(n)))
@@ -68,6 +104,11 @@ def confidence_interval(x_bar,z,s,n):
     SE = s/float(math.sqrt(n))
     return(x_bar-(z*SE),x_bar+(z*SE))
 
+def confidence_interval_indy(x_bar_1,x_bar_2,z,s_1,s_2,n_1,n_2): 
+    SE = math.sqrt(s_1**2/float(n_1) + s_2**2/float(n_2))
+    diff = (x_bar_1 - x_bar_2)
+    return(diff-(z*SE), diff + (z*SE))
+
 def z_score(x_bar,x,sigma): 
     #x_bar is a sample mean, x is a mean and sigma is the standard deviation 
     return(x_bar-x)/float(sigma)
@@ -77,6 +118,14 @@ def t_stat(x_bar,x,s,n):
     SE = s/float(math.sqrt(n)) 
     return(x_bar-x)/SE
 
+def t_stat_indy(x_bar_1,x_bar_2,x_1,x_2,s_1,s_2,n_1,n_2): 
+    SE = math.sqrt(s_1**2/float(n_1) + s_2**2/float(n_2))
+    return(((x_bar_1-x_bar_2)-(x_1-x_2))/SE)
+
+def t_stat_indy_pool(x_bar_1,x_bar_2,x_1,x_2,SE): 
+    """pooled variance for the t_test. Normally we use thsi one."""
+    return(((x_bar_1-x_bar_2)-(x_1-x_2))/SE)
+   
 def cohens_d(x_bar,x,s): 
     #s := as the standard deviation of the sample mean x_bar. 
     d = (x_bar-x)/float(s)
@@ -104,6 +153,12 @@ def degrees_of_freedom(x):
     #x is a list  
     """the left hand side is the sample and the right is the DOF."""
     return (len(x),len(x)-1)
+
+def degrees_of_freedom_indy(x_1,x_2): 
+    n_1 = len(x_1) 
+    n_2 = len(x_2)
+    df = n_1 + n_2 - 2
+    return (((n_1,n_2), df))
 
 def r_squared(x_bar,x,s,n): 
     """this is for the t-test r squared were we look at the degrees of freedom"""
