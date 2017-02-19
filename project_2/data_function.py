@@ -29,3 +29,11 @@ def get_unique_students(data):
     for data_point in data: 
         unique_students.add(data['account_key'])
         return unique_students
+
+def remove_udacity_accounts(data):
+    """Give some data with account_key field, removes any records corresponding to Udacity test accounts."""
+    non_udacity_data = []
+    for data_point in data:
+        if data_point['account_key'] not in udacity_test_accounts:
+            non_udacity_data.append(data_point)
+    return non_udacity_data
