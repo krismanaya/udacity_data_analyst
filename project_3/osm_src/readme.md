@@ -26,4 +26,33 @@ Finding problems within the data and correcting them seemed like a streneous tas
 		<tag k="tiger:name_type" v="Ct" />
 		<tag k="tiger:separated" v="no" />
 		<tag k="tiger:zip_right" v="95831" />
-	```
+```
+
+### Overabbreviated street names
+Essentially, this was an exercise we had to perform using regular expression and grouping to essentially look for any problems like 
+``St.`` or ``Blvd.`` and make each word consistent like ``Street`` or ``Boulevard``. There was problems with the ``update_name()`` function which was finding extra special words like ``Plaza`` and throwing a ``KeyError``, so I had to fix this probelm by asking the could to only choose groupings which we in my ``mapping`` dictionary. This solved the problem and was able to correct my street names: 
+
+```python 
+
+def update_name(name, mapping):
+    
+        m = street_type_re.search(name)
+        if m not in expected:
+            if m.group() in mapping.keys(): 
+                name = re.sub(m.group(), mapping[m.group()], name)
+    
+        return name
+```
+
+I think tacked my ``update_name()`` function onto the ``shape_element()`` function so everything would be written into the ``.csv`` file nicely. I called the ``is_street_nam()`` function which checks attributes addresses and then updated the mapping as shown below:
+
+```python 
+
+            if is_street_name(tag): 
+                nodes_tags['value'] = update_name(tag.attrib['v'],mapping) #update the mapping for street names
+            else: 
+                nodes_tags['value'] = tag.attrib['v']
+```
+
+
+
