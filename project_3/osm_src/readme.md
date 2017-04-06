@@ -6,6 +6,7 @@
 Sacramento, CA, United States 
 * https://www.openstreetmap.org/way/33135846
 * https://mapzen.com/data/metro-extracts/
+* http://www.zipmap.net/California/Sacramento_County.htm
 
 Sacramento is where I spend most of my time, so I'm very interested to see what queries I may find regarding my city. 
 
@@ -69,4 +70,78 @@ I found regular expression to be a challenge and couldn't quite get my handle on
                     nodes_tags['value'] = split[0] 
 ``` 
 
+## Postal Codes
+After I was able to clean the postal codes I began to look at the results within the county the zip were provided. Above I provided a link to the Sacramento county boundy map to see if it's consistent to the Open Street Map data provided. I still hadn't fixed the ``tiger`` gps ``tags`` for the ``zip_left`` and ``zip_right`` because that was a problem I didn't want to explore. I figured I would get enough data within the ``postcode`` key. Regardless, of fixing this I was able to aggregate postals codes and its results by adding an or statement to ``zip_left``. I'm not sure if this caused for over counting within the data set but here are the ruslts below:
+
+```sql
+SELECT tags.value, COUNT(*) as count 
+FROM (SELECT * FROM nodes_tags 
+      UNION ALL 
+      SELECT * FROM ways_tags) tags
+WHERE tags.key='postcode' or tags.key='zip_left'
+GROUP BY tags.value
+ORDER BY count DESC;
+```
+
+
+```sql
+value|count
+95691|15341
+95605|5216
+95828|768
+95823|724
+95831|648
+95758|560
+95822|527
+95624|498
+95821|474
+95608|429
+95826|416
+95838|415
+95820|385
+95833|371
+95818|369
+95841|367
+95864|358
+95829|304
+95660|293
+95815|291
+95842|277
+95825|276
+95819|264
+95835|257
+95817|242
+95824|238
+95834|195
+95814|183
+95816|183
+95673|135
+95827|89
+95832|68
+95843|49
+95811|38
+95626|14
+95652|11
+95742|7
+95612|6
+95837|6
+96816|5
+95830|4
+95683|3
+95820:95826|3
+95628|2
+95817:95820|2
+95818:95819|2
+2557|1
+85834|1
+95605:95691|1
+95621|1
+95670|1
+95757|1
+95820:95823|1
+98584|1
+
+``` 
+
+As you can see above ``95691`` is the highest count which is JUSTTTTTTT outside the boundry line in ``West Sacramento``. I don't know if they redrew the boundry lines, but it seems interesting that this was included into the ``Open Street Map`` dataset. 
 
