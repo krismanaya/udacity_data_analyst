@@ -1,5 +1,5 @@
 # OpenStreetMap Case Study 
-:tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: 
+:tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: :tada: 
 
 ### Map Area 
 
@@ -18,6 +18,7 @@ Finding problems within the data and correcting them seemed like a streneous tas
 * Inconsistent postal codes ("_95819-6055_","_CA 95834_")
 * Incorrect postal codes "_85834_". Some of these were outside the county region like "_Charmichale,CA_". 
 * "_Zip Left_" and "_Zip Right_" postal codes that wee included into the ``'k'`` tags for the ``Tiger`` GPS data. This data was devided into segmants 
+* Words like ``sacramento`` were written like ``Sacramento`` and ``american`` like ``American``. 
 
 ```XML
 		<tag k="tiger:reviewed" v="no" />
@@ -44,15 +45,28 @@ def update_name(name, mapping):
         return name
 ```
 
-I think tacked my ``update_name()`` function onto the ``shape_element()`` function so everything would be written into the ``.csv`` file nicely. I called the ``is_street_nam()`` function which checks attributes addresses and then updated the mapping as shown below:
+I tacked my ``update_name()`` function onto the ``shape_element()`` function so everything would be written into the ``.csv`` file nicely. I called the ``is_street_nam()`` function which checks attributes addresses and then updated the mapping as shown below:
 
 ```python 
 
             if is_street_name(tag): 
-                nodes_tags['value'] = update_name(tag.attrib['v'],mapping) #update the mapping for street names
+                nodes_tags['value'] = update_name(tag.attrib['v'],mapping) 
             else: 
                 nodes_tags['value'] = tag.attrib['v']
 ```
 
+### Inconsistent postal codes
+I found regular expression to be a challenge and couldn't quite get my handle on it for the postal codes. I spent about four hours trying to figure out how to fix them using the regular expression grouping technique. I failed, but with coding there is always another way. I figured I would use the split method and split the postal codes that have ``"CA"`` or ``"-"`` characters in them :thumbsup:. I placed my logic within the ``shape_element()`` function and I used the ``is_post_code()`` function too look for all post codes and if ``"CA"`` or ``"-"``  was inside the inconsistent zip, I split them up and pulled out what I needed. 
+
+```python 
+
+            if is_post_code(tag): 
+                if 'CA' in tag.attrib['v']:
+                    split = tag.attrib['v'].split(' ') 
+                    nodes_tags['value'] = split[1] 
+                elif '-' in tag.attrib['v']: 
+                    split = tag.attrib['v'].split('-') 
+                    nodes_tags['value'] = split[0] 
+``` 
 
 
