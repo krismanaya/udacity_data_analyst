@@ -198,7 +198,13 @@ FROM (SELECT id FROM nodes_tags WHERE key == 'amenity' and (value == 'bar' or va
 
 ### Statistics Contribution
 
- * Thigs go here 
+ Since there is automated map editing bots like ``woodpeck_fixbot`` are going to be responsible for more of the ``open street map``postings. There is not much we can grab statistics for except for mayber users so here is some percentage statistics: 
+
+ * Top user contriution percentage ("_woodpeck_fixbot_") 25.7 %
+ * Combined top 2 users' contribution ("_nmixter_" and "_woodpeck_fixbot_") 42%
+ * All 10 users contribution 73.4 %
+
+ Since bots are responsible for primary part of the Sacramento data it's probably likely they are responsible for adding extra counties and large mistakes inside our ``open street map``. If more people started contributing to the dataset maybe we would see less simple mistakes for Sacramento County. 
 
 
  ### Additional Data Exploration 
