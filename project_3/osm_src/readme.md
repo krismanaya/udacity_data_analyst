@@ -179,8 +179,9 @@ TheOutpost|6092
 ### Number of unique :coffee::coffee:s
 ```sql 
 SELECT COUNT(DISTINCT(e.id))     
-FROM (SELECT id FROM nodes_tags WHERE value LIKE '%cafe' 
-      UNION ALL SELECT id FROM ways_tags WHERE value LIKE '%cafe') e;
+FROM (SELECT id FROM nodes_tags WHERE key == 'amenity' and (value == 'cafe')
+      UNION ALL SELECT id FROM ways_tags WHERE key == 'amenity' 
+      and (value == 'cafe')) e;
 ```
 81 (Not accurate)
 
@@ -246,5 +247,28 @@ Uncle Vito's Midtown
 University of Beer
 XO Lounge
 
+```
+#### Top ten amenities
+
+```sql 
+SELECT value, COUNT(*) as num
+FROM (SELECT * FROM ways_tags UNION ALL SELECT * FROM nodes_tags)
+WHERE key=='amenity'
+GROUP BY value
+ORDER BY num DESC
+LIMIT 10;
+```
+
+```sql 
+parking|879
+school|454
+place_of_worship|396
+restaurant|216
+fast_food|170
+fuel|111
+cafe|69
+bank|59
+fire_station|48
+library|44
 ```
 
