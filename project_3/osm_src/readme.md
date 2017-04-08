@@ -46,7 +46,7 @@ def update_name(name, mapping):
         return name
 ```
 
-I tacked my ``update_name()`` function onto the ``shape_element()`` function so everything would be written into the ``.csv`` file nicely. I called the ``is_street_nam()`` function which checks attributes addresses and then updated the mapping as shown below:
+I tacked my ``update_name()`` function onto the ``shape_element()`` function so everything would be written into the ``.csv`` file nicely. I called the ``is_street_name()`` function which checks attributes addresses and then updated the mapping as shown below:
 
 ```python 
 
@@ -80,9 +80,10 @@ FROM (SELECT * FROM nodes_tags
       SELECT * FROM ways_tags) tags
 WHERE tags.key='postcode' or tags.key='zip_left'
 GROUP BY tags.value
-ORDER BY count DESC;
+ORDER BY count DESC
+LIMIT 10;
 ```
-
+Here are my top 10 zips:
 
 ```sql
 value|count
@@ -96,52 +97,27 @@ value|count
 95624|498
 95821|474
 95608|429
-95826|416
-95838|415
-95820|385
-95833|371
-95818|369
-95841|367
-95864|358
-95829|304
-95660|293
-95815|291
-95842|277
-95825|276
-95819|264
-95835|257
-95817|242
-95824|238
-95834|195
-95814|183
-95816|183
-95673|135
-95827|89
-95832|68
-95843|49
-95811|38
-95626|14
-95652|11
-95742|7
-95612|6
-95837|6
-96816|5
-95830|4
-95683|3
-95820:95826|3
-95628|2
-95817:95820|2
-95818:95819|2
-2557|1
-85834|1
-95605:95691|1
-95621|1
-95670|1
-95757|1
-95820:95823|1
-98584|1
 
 ``` 
 
-As you can see above ``95691`` is the highest count which is JUSTTTTTTT outside the boundry line in ``West Sacramento``. I don't know if they redrew the boundry lines, but it seems interesting that this was included into the ``Open Street Map`` dataset. 
+As you can see above ``95691`` is the highest count which is JUSTTTTTTT outside the boundry line in ``West Sacramento``. I don't know if they redrew the boundry lines, but it seems interesting that this was included into the ``Open Street Map`` dataset. This presents a problem trying to analyze Sacramento county when a majority of zip codes are outside the boundry lines. It will not be a true representation of my fair city. I then thought maybe, there might be some other counties listed in this data set, so I look for key words like ``'%county'`` into ``sql`` and looked at the first two: 
+
+```sql
+SELECT tags.value, COUNT(*) as count
+FROM (SELECT * FROM nodes_tags UNION ALL 
+      SELECT * FROM ways_tags) tags 
+WHERE tags.key LIKE '%county'
+GROUP BY tags.value
+ORDER BY count DESC
+LIMIT 2;  
+```
+Top two counties: 
+
+```sql 
+Sacramento, CA|13957
+Yolo, CA|750
+
+```
+As you can see a whole other county is included in the data set. This makes the data ver problematic because it doesn't show a full representation of Sacramento County as a whole. 
+
 
