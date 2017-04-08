@@ -179,14 +179,72 @@ TheOutpost|6092
 ### Number of unique :coffee::coffee:s
 ```sql 
 SELECT COUNT(DISTINCT(e.id))     
-FROM (SELECT id FROM nodes_tags WHERE value LIKE '%cafe' UNION ALL SELECT id FROM ways_tags WHERE value LIKE '%cafe') e;
+FROM (SELECT id FROM nodes_tags WHERE value LIKE '%cafe' 
+      UNION ALL SELECT id FROM ways_tags WHERE value LIKE '%cafe') e;
 ```
-81
+81 (Not accurate)
 
 ### Number of unique :beers::beers:s
 ```sql 
 SELECT COUNT(DISTINCT(e.id))     
-FROM (SELECT id FROM nodes_tags WHERE key == 'amenity' and value == 'bar' 
-      UNION ALL SELECT id FROM ways_tags WHERE key == 'amenity' and value == 'bar') e;
+FROM (SELECT id FROM nodes_tags WHERE key == 'amenity' and (value == 'bar' or value == 'pub')
+      UNION ALL SELECT id FROM ways_tags WHERE key == 'amenity' and (value == 'bar' or value == 'pub')) e;
+```
+24 (Not accurate)
+
+
+## Additional Ideas 
+
+### Statistics Contribution
+
+ * Thigs go here 
+
+
+ ### Additional Data Exploration 
+
+ #### :beers::beers:s in Sacramento 
+```sql 
+SELECT nodes_tags.value as name
+FROM nodes_tags 
+     JOIN (SELECT DISTINCT(id) FROM nodes_tags WHERE value='bar' or value == 'pub') i
+     ON nodes_tags.id = i.id
+WHERE nodes_tags.key = 'name'
+GROUP BY nodes_tags.value
+UNION ALL 
+SELECT ways_tags.value as name
+FROM ways_tags
+     JOIN (SELECT DISTINCT(id) FROM ways_tags WHERE value='bar' or value == 'pub') i
+     ON ways_tags.id = i.id
+WHERE ways_tags.key = 'name'
+GROUP BY ways_tags.value
+ORDER BY name ASC;  
+```
+My :girl::heart_eyes: works at one of these bars. :raised_hands:
+```sql 
+Alley Katz
+Bike Dog Brewing Co.
+Bonn Lair
+Burgers and Brew
+Der Biergarten
+Fox and Goose Public House
+Fugu Lounge
+Harry's Lounge
+Joe Marty's
+Kupros Craft House
+Mix
+New Helvetia Brewing
+O'Mally's Irish Pub
+Old Ironsides
+Streets of London Pub
+Tank House
+The Golden Bear
+The Grand Wine Bar
+The O Club
+The Trap
+Torch Club
+Uncle Vito's Midtown
+University of Beer
+XO Lounge
+
 ```
 
