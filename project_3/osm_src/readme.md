@@ -307,6 +307,50 @@ Yellowbill
 Yogurtagogo
 Zia's
 ```
+
+### Restaurants
+```sql 
+SELECT nodes_tags.value as name
+FROM nodes_tags 
+     JOIN (SELECT DISTINCT(id) FROM nodes_tags WHERE value='restaurant') i
+     ON nodes_tags.id = i.id
+WHERE nodes_tags.key = 'name'
+GROUP BY nodes_tags.value
+UNION ALL 
+SELECT ways_tags.value as name
+FROM ways_tags
+     JOIN (SELECT DISTINCT(id) FROM ways_tags WHERE value='restaurant') i
+     ON ways_tags.id = i.id
+WHERE ways_tags.key = 'name'
+GROUP BY ways_tags.value
+LIMIT 20;  
+```
+
+I limited only 20 because it's a lot of places. 
+
+```sql 
+3 Fires Lounge
+ARC Student Center
+Aioli Bodega Espanola
+Amy's Cafe
+Applebee's
+Arthur Henry's
+Aviators
+Azul Mexican Food & Tequila Bar
+BJ's Restaurant & Brewhouse
+BJ's Restaurant and Brewhouse
+Bacon and Butter
+Bento Box
+Biba
+Black Bear Diner
+Blackbird Kitchen + Beer Gallery
+Block Butcher Bar
+Boon Boon Cafe
+Bowinkles
+Brookfield's
+Buca di Beppo
+```
+
 ### Top ten amenities
 
 ```sql 
@@ -329,5 +373,37 @@ cafe|69
 bank|59
 fire_station|48
 library|44
+```
+
+### Top ten :tomato::corn::pizza::fries::spaghetti::hamburger:
+```sql
+SELECT nodes_tags.value, Count(*) as num
+FROM nodes_tags 
+     JOIN (SELECT DISTINCT(id) FROM nodes_tags WHERE value='restaurant') i
+     ON nodes_tags.id = i.id
+WHERE nodes_tags.key = 'cuisine'
+GROUP BY nodes_tags.value
+UNION ALL 
+SELECT ways_tags.value, Count(*) as num
+FROM ways_tags
+     JOIN (SELECT DISTINCT(id) FROM ways_tags WHERE value='restaurant') i
+     ON ways_tags.id = i.id
+WHERE ways_tags.key = 'cuisine'
+GROUP BY ways_tags.value
+ORDER BY num DESC
+LIMIT 10;  
+```
+
+```sql 
+mexican|14
+burger|10
+american|9
+italian|9
+pizza|9
+chinese|7
+japanese|7
+thai|7
+sandwich|5
+asian|3
 ```
 
