@@ -13,12 +13,12 @@ Sacramento is where I spend most of my time, so I'm very interested to see what 
 
 ## Problems Encountered in the Map 
 
-Finding problems within the data and correcting them seemed like a streneous task. I created a sample ``.osm`` file and was able to find certain problems contained within the data that I could correct. However, I went ahead and skipped certain areas that needed correcting. 
+Finding problems within the data and correcting them seemed like a strenuous task. I created a sample ``.osm`` file and was able to find certain problems contained within the data that I could correct. However, I went ahead and skipped certain areas that needed correcting. 
 
 * Overabbreviated street names ("_2108 Riverside Blvd._") 
 * Inconsistent postal codes ("_95819-6055_","_CA 95834_")
 * Incorrect postal codes "_85834_". Some of these were outside the county region like "_Charmichale,CA_". 
-* "_Zip Left_" and "_Zip Right_" postal codes that wee included into the ``'k'`` tags for the ``Tiger`` GPS data. This data was devided into segmants 
+* "_Zip Left_" and "_Zip Right_" postal codes that we included into the ``'k'`` tags for the ``Tiger`` GPS data. This data was divided into segments 
 * Words like ``sacramento`` were written like ``Sacramento`` and ``american`` like ``American``. 
 
 ```XML
@@ -32,7 +32,7 @@ Finding problems within the data and correcting them seemed like a streneous tas
 
 ## Overabbreviated street names
 Essentially, this was an exercise we had to perform using regular expression and grouping to essentially look for any problems like 
-``St.`` or ``Blvd.`` and make each word consistent like ``Street`` or ``Boulevard``. There was problems with the ``update_name()`` function which was finding extra special words like ``Plaza`` and throwing a ``KeyError``, so I had to fix this probelm by asking the could to only choose groupings which we in my ``mapping`` dictionary. This solved the problem and was able to correct my street names: 
+``St.`` or ``Blvd.`` and make each word consistent like ``Street`` or ``Boulevard``. There was problems with the ``update_name()`` function which was finding extra special words like ``Plaza`` and throwing a ``KeyError``, so I had to fix this problem by asking the could to only choose groupings which we in my ``mapping`` dictionary. This solved the problem and was able to correct my street names: 
 
 ```python 
 
@@ -46,7 +46,7 @@ def update_name(name, mapping):
         return name
 ```
 
-I tacked my ``update_name()`` function onto the ``shape_element()`` function so everything would be written into the ``.csv`` file nicely. I called the ``is_street_name()`` function which checks attributes addresses and then updated the mapping as shown below:
+I tacked my ``update_name()`` function onto the ``shape_element()`` function so everything would be written into the ``.csv`` file nicely. I called the ``is_street_name()`` function which checks attribute's addresses and then updated the mapping as shown below:
 
 ```python 
 
@@ -57,7 +57,7 @@ I tacked my ``update_name()`` function onto the ``shape_element()`` function so 
 ```
 
 ### Inconsistent postal codes
-I found regular expression to be a challenge and couldn't quite get my handle on it for the postal codes. I spent about four hours trying to figure out how to fix them using the regular expression grouping technique. I failed, but with coding there is always another way. I figured I would use the split method and split the postal codes that have ``"CA"`` or ``"-"`` characters in them :thumbsup:. I placed my logic within the ``shape_element()`` function and I used the ``is_post_code()`` function too look for all post codes and if ``"CA"`` or ``"-"``  was inside the inconsistent zip, I split them up and pulled out what I needed. 
+I found regular expression to be a challenge and couldn't quite get my handle on it for the postal codes. I spent about four hours trying to figure out how to fix them using the regular expressions grouping technique. I failed, but with coding there is always another way. I figured I would use the split method and split the postal codes that have ``"CA"`` or ``"-"`` characters in them :thumbsup:. I placed my logic within the ``shape_element()`` function and I used the ``is_post_code()`` function too look for all post codes and if ``"CA"`` or ``"-"``  was inside the inconsistent zip, I split them up and pulled out what I needed. 
 
 ```python 
 
@@ -71,7 +71,7 @@ I found regular expression to be a challenge and couldn't quite get my handle on
 ``` 
 
 ## Postal Codes
-After I was able to clean the postal codes I began to look at the results within the county the zip were provided. Above I provided a link to the Sacramento county boundy map to see if it's consistent to the Open Street Map data provided. I still hadn't fixed the ``tiger`` gps ``tags`` for the ``zip_left`` and ``zip_right`` because that was a problem I didn't want to explore. I figured I would get enough data within the ``postcode`` key. Regardless, of fixing this I was able to aggregate postals codes and its results by adding an or statement to ``zip_left``. I'm not sure if this caused for over counting within the data set but here are the ruslts below:
+After I was able to clean the postal codes I began to look at the results within the county the zip were provided. Above I provided a link to the Sacramento county boundary map to see if it's consistent to the Open Street Map data provided. I still hadn't fixed the ``tiger`` gps ``tags`` for the ``zip_left`` and ``zip_right`` because that was a problem I didn't want to explore. I figured I would get enough data within the ``postcode`` key. Regardless, fixing this I was able to aggregate postal codes and its results by adding an or statement to ``zip_left``. I'm not sure if this caused for over counting within the data set but here are the ruslts below:
 
 ```sql
 SELECT tags.value, COUNT(*) as count 
@@ -100,7 +100,7 @@ value|count
 
 ``` 
 
-As you can see above ``95691`` is the highest count which is JUSTTTTTTT outside the boundry line in ``West Sacramento``. I don't know if they redrew the boundry lines, but it seems interesting that this was included into the ``Open Street Map`` dataset. This presents a problem trying to analyze Sacramento county when a majority of zip codes are outside the boundry lines. It will not be a true representation of my fair city. I then thought maybe, there might be some other counties listed in this data set, so I look for key words like ``'%county'`` into ``sql`` and looked at the first two: 
+As you can see above ``95691`` is the highest count which is JUSTTTTTTT outside the boundary line in ``West Sacramento``. I don't know if they redrew the boundary lines, but it seems interesting that this was included into the ``Open Street Map`` dataset. This presents a problem trying to analyze Sacramento county when a majority of zip codes are outside the boundary lines. It will not be a true representation of my fair city. I then thought maybe, there might be some other counties listed in this data set, so I look for key words like ``'%county'`` into ``sql`` and looked at the first two: 
 
 ```sql
 SELECT tags.value, COUNT(*) as count
@@ -122,7 +122,7 @@ As you can see a whole other county is included in the data set. This makes the 
 
 ## Data Overview and Additional Idea. 
 
-For this section I'm going to give the reader basic statistics about the dataset, the SQL queries and additional explination.
+For this section I'm going to give the reader basic statistics about the dataset, the SQL queries and additional explanation.
 
 ### File sizes
 ```
@@ -198,7 +198,7 @@ FROM (SELECT id FROM nodes_tags WHERE key == 'amenity' and (value == 'bar' or va
 
 ### Statistics Contribution
 
- Since there is automated map editing bots like ``woodpeck_fixbot`` are going to be responsible for more of the ``open street map``postings. There is not much we can grab statistics for except for mayber users so here is some percentage statistics: 
+ Since there is automated map editing bots like ``woodpeck_fixbot`` are going to be responsible for more of the ``open street map``postings. There is not much we can grab statistics for except for maybe users so here is some percentage statistics: 
 
  * Top user contriution percentage ("_woodpeck_fixbot_") 25.7 %
  * Combined top 2 users' contribution ("_nmixter_" and "_woodpeck_fixbot_") 42%
@@ -272,7 +272,7 @@ WHERE ways_tags.key = 'name'
 GROUP BY ways_tags.value
 ORDER BY name ASC;  
 ```
-Notice how Jamba Juice, Dos Coyotes, Subway and Togo's is on there? Beacause it's 'Cafe'..
+Notice how Jamba Juice, Dos Coyotes, Subway and Togo's is on there? Because it's 'Cafe'..
 I would disagree with that. 
 ```
 Ambrosia Cafe
@@ -415,4 +415,4 @@ asian|3
 
 ## Conclusion 
 
-While the ``open street map`` did have a lot of area codes outside of Sacramento County I still was able to capture alot of resturants and bars that were familar to me. I believe that I was succesfully able to audit and clean the data that was provided to me in the exercise. Bouncing the data down in SQL made it way faster to manipulate the data and to peek inside the city of Sacramento. However, I do understand Python's use for data cleaning. All and all a great project, now I'm going to sleep :sleeping:
+While the ``open street map`` did have a lot of area codes outside of Sacramento County I still was able to capture a lot of restaurants and bars that were familiar to me. I believe that I was successfully able to audit and clean the data that was provided to me in the exercise. Bouncing the data down in SQL made it way faster to manipulate the data and to peek inside the city of Sacramento. However, I do understand Python's use for data cleaning. All and all a great project, now I'm going to sleep :sleeping:
