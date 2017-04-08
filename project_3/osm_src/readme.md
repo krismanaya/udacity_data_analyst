@@ -407,3 +407,6 @@ sandwich|5
 asian|3
 ```
 
+## Conclusion 
+
+While the ``open street map`` did have a lot of area codes outside of Sacramento County I still was able to capture alot of resturants and bars that were familar to me. I believe that I was succesfully able to audit and clean the data that was provided to me in the exercise. Bouncing the data down in SQL made it way faster to manipulate the data and to peek inside the city of Sacramento. However, I do understand Python's use for data cleaning. All and all a great project, now I'm going to sleep :sleeping:
