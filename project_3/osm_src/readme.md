@@ -154,13 +154,6 @@ FROM (SELECT uid FROM nodes UNION ALL SELECT uid FROM ways) e;
 ```
 536
 
-### Number of unique cafe's
-```sql 
-SELECT COUNT(DISTINCT(e.id))     
-FROM (SELECT id FROM nodes_tags WHERE value LIKE '%cafe' UNION ALL SELECT id FROM ways_tags WHERE value LIKE '%cafe') e;
-```
-81
-
 ### Top 10 contributing users
 ```sql
 sqlite> SELECT e.user, COUNT(*) as num
@@ -183,4 +176,17 @@ Charles_Smothers|6412
 TheOutpost|6092 
 ```
 
+### Number of unique :coffee::coffee:s
+```sql 
+SELECT COUNT(DISTINCT(e.id))     
+FROM (SELECT id FROM nodes_tags WHERE value LIKE '%cafe' UNION ALL SELECT id FROM ways_tags WHERE value LIKE '%cafe') e;
+```
+81
+
+### Number of unique :beers::beers:s
+```sql 
+SELECT COUNT(DISTINCT(e.id))     
+FROM (SELECT id FROM nodes_tags WHERE key == 'amenity' and value == 'bar' 
+      UNION ALL SELECT id FROM ways_tags WHERE key == 'amenity' and value == 'bar') e;
+```
 
