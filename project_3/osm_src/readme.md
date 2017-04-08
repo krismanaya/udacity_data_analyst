@@ -154,6 +154,13 @@ FROM (SELECT uid FROM nodes UNION ALL SELECT uid FROM ways) e;
 ```
 536
 
+### Number of unique cafe's
+```sql 
+SELECT COUNT(DISTINCT(e.id))     
+FROM (SELECT id FROM nodes_tags WHERE value LIKE '%cafe' UNION ALL SELECT id FROM ways_tags WHERE value LIKE '%cafe') e;
+```
+81
+
 ### Top 10 contributing users
 ```sql
 sqlite> SELECT e.user, COUNT(*) as num
@@ -161,6 +168,7 @@ FROM (SELECT user FROM nodes UNION ALL SELECT user FROM ways) e
 GROUP BY e.user
 ORDER BY num DESC
 LIMIT 10;
+```
 
 ```sql
 woodpeck_fixbot|91108
