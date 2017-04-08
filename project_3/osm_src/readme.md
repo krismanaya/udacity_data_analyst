@@ -118,6 +118,61 @@ Sacramento, CA|13957
 Yolo, CA|750
 
 ```
-As you can see a whole other county is included in the data set. This makes the data ver problematic because it doesn't show a full representation of Sacramento County as a whole. 
+As you can see a whole other county is included in the data set. This makes the data very problematic because it doesn't show a full representation of Sacramento County as a whole. 
+
+## Data Overview and Additional Idea. 
+
+For this section I'm going to give the reader basic statistics about the dataset, the SQL queries and additional explination.
+
+### File sizes
+```
+sacramento.osm ......... 76.7 MB
+sacramento.db .......... 50.9 MB
+nodes.csv ............. 26.7 MB
+nodes_tags.csv ........  4.4 MB
+ways.csv ..............  2.1 MB
+ways_tags.csv .........  7.7 MB
+ways_nodes.cv .........  2.1 MB  
+```  
+
+### Number of nodes
+```
+sqlite> SELECT COUNT(*) FROM nodes;
+```
+318441
+
+### Number of ways
+```
+sqlite> SELECT COUNT(*) FROM ways;
+```
+35541
+
+### Number of unique users
+```sql
+sqlite> SELECT COUNT(DISTINCT(e.uid))          
+FROM (SELECT uid FROM nodes UNION ALL SELECT uid FROM ways) e;
+```
+536
+
+### Top 10 contributing users
+```sql
+sqlite> SELECT e.user, COUNT(*) as num
+FROM (SELECT user FROM nodes UNION ALL SELECT user FROM ways) e
+GROUP BY e.user
+ORDER BY num DESC
+LIMIT 10;
+
+```sql
+woodpeck_fixbot|91108
+nmixter|56917
+balcoath|26647
+jraller|24285
+tkmedia|18443
+animeigo|14271
+Eureka gold|9160
+balrog-kun|6568
+Charles_Smothers|6412
+TheOutpost|6092 
+```
 
 
