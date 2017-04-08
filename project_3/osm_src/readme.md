@@ -183,7 +183,7 @@ FROM (SELECT id FROM nodes_tags WHERE key == 'amenity' and (value == 'cafe')
       UNION ALL SELECT id FROM ways_tags WHERE key == 'amenity' 
       and (value == 'cafe')) e;
 ```
-81 (Not accurate)
+69 (Not accurate)
 
 ### Number of unique :beers::beers:s
 ```sql 
@@ -203,7 +203,7 @@ FROM (SELECT id FROM nodes_tags WHERE key == 'amenity' and (value == 'bar' or va
 
  ### Additional Data Exploration 
 
- #### :beers::beers:s in Sacramento 
+ ### :beers::beers:s in Sacramento 
 ```sql 
 SELECT nodes_tags.value as name
 FROM nodes_tags 
@@ -246,9 +246,68 @@ Torch Club
 Uncle Vito's Midtown
 University of Beer
 XO Lounge
-
 ```
-#### Top ten amenities
+
+
+### :coffee::coffee: shops in Sacramento 
+```sql 
+SELECT nodes_tags.value as name
+FROM nodes_tags 
+     JOIN (SELECT DISTINCT(id) FROM nodes_tags WHERE value='cafe') i
+     ON nodes_tags.id = i.id
+WHERE nodes_tags.key = 'name'
+GROUP BY nodes_tags.value
+UNION ALL 
+SELECT ways_tags.value as name
+FROM ways_tags
+     JOIN (SELECT DISTINCT(id) FROM ways_tags WHERE value='cafe') i
+     ON ways_tags.id = i.id
+WHERE ways_tags.key = 'name'
+GROUP BY ways_tags.value
+ORDER BY name ASC;  
+```
+Notice how Jamba Juice, Dos Coyotes, Subway and Togo's is on there? Beacause it's 'Cafe'..
+I would disagree with that. 
+```
+Ambrosia Cafe
+American River Cafe
+Bella Bru Cafe
+Broadway Coffee
+Cafe Latte
+Chocolate Fish Coffee
+Dos Coyotes
+Espresso metro
+Estelle's Patisserie
+Fremont Presbyterian Coffee Bar
+Ginger Elizabeth Chocolates
+Insight
+Insight Coffee
+Jamba Juice
+La Bou Bakery & Cafe
+Ms. T's Good To Go Cafe
+Old Soul Coffee Co.
+Old Soul Coffee Co. at 40 Acres
+Old Soul at Weatherstone
+Peet's Coffee & Tea
+Peet’s Coffee & Tea
+Sal's West
+Sandwitch Spot
+Shine Cafe
+Starbucks
+Starbucks
+Starbucks Cafe
+Starbucks Coffee
+Starbucks at the Hornet Bookstore Cafe
+Subway
+Temple Cafe
+Temple Coffee
+The Bread Store
+Togo's
+Yellowbill
+Yogurtagogo
+Zia's
+```
+### Top ten amenities
 
 ```sql 
 SELECT value, COUNT(*) as num
