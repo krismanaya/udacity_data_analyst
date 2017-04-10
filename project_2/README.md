@@ -25,19 +25,19 @@ The Titanic data allows us to get a sample of the passangers who survived, class
 The most interesting insight (IMO) was there a better survival outcome based on socio-economic status? Given your position on the ship and sex what was the likely hood of your survival? However, we are still a bit limited how the survival and victim rate stook for most female and males.
 
 ### Survial and Victims by Class and Age: 
-<img src="/images/BPTSD.png" class='center'/>
+<img src="../images/BPTSD.png" class='center'/>
 
 First let's investigate the passangers by age and class. It's easy to see regarding our boxplot above that the victim rate (denoted as **0**) for each class is set a bit higher by age then the passangers who survived (denoted as **1**). I was especially interested in the first class passanger median for the victims because it falls within the top third quartile of IQR for the passangers who survived. However, we are still a bit limited how the survival and victim rate stood out for most female and males.I'm pretty sure everybody has seen titanic and probably knows the scene "the women and children go first!" Could this in fact be a true possibility. Let's investigate deeper! 
 
 ### Male Survival & Male Victims: 
-<img src="/images/MS.png" width="350" height="300" class="left"/>
-<img src="/images/MD.png" width="350" height="300" class="right"/>
+<img src="../images/MS.png" width="350" height="300" class="left"/>
+<img src="../images/MD.png" width="350" height="300" class="right"/>
 
 The histograms shows the sample population of **577** men who survived and were victims by each class. You may notice that first class males survived in a larger amount then were victims. Within the total sample poulation of males, first class men had **7.8%** percent chance of survival and a **13%** chance of death while, third class males had a **8.1%** chance of survival and a **52%** chance of death. 
 
 ### Female Survival & Female Victims: 
-<img src="/images/FS.png" width="350" height="300" class="left"/>
-<img src="/images/FD.png" width="350" height="300" class="right"/>
+<img src="../images/FS.png" width="350" height="300" class="left"/>
+<img src="../images/FD.png" width="350" height="300" class="right"/>
 
 For the female histograms the total sample population of females were **314**. And as you can see from the visualization women had a better chance of survival. In fact, withint the total sample population of women on the Titanic, first class females had a **29%** chance of survival and only **1%** chance of death, while third class female passangers had **23%** chance of survival and a equal percantage of death. 
 
@@ -46,14 +46,14 @@ For the female histograms the total sample population of females were **314**. A
 Good question! We want to know what age status was most likely to survive based on the class let's analyze the results 
 
 ### Mean Age By Class for Males
-<img src="/images/MCS.png" width="350" height="300" class="left"/> 
-<img src="/images/MCD.png" width="350" height="300" class="right"/> 
+<img src="../images/MCS.png" width="350" height="300" class="left"/> 
+<img src="../images/MCD.png" width="350" height="300" class="right"/> 
 
 For survival of first class passnagers the average was around **30** while for second class was below **15** and third class was around **18**.The data that pops out to me is the victims of the second class passangers. The age was roughly around **30** while most of the survivors in the second class were children. Thirty years of age is around the time people usually have  young children. 
 
 ### Mean Age by Class for Females
-<img src="/images/FCS.png" width="350" height="300" class="left"/> 
-<img src="/images/FCD.png" width="350" height="300" class="right"/>
+<img src="../images/FCS.png" width="350" height="300" class="left"/> 
+<img src="../images/FCD.png" width="350" height="300" class="right"/>
 
 for Females, the data within the histogram that pops out to me the most survival and vitctim age for third class passagners falls around children to teenagers. It looks like the average age of a female victim in third class was around **19** or **20** years old. 
 
@@ -63,9 +63,9 @@ Personally, we believe you may have ahd a better chance of survival in as a firs
 
 ### Titanic Survivors by Class
 
-<img src="/images/PIEFC.png" width="350" height="300" class="left"/> 
-<img src="/images/PIESC.png" width="350" height="300" class="right"/> 
-<img src="/images/PIETC.png" width="300" height="300" class="right"/> 
+<img src="../images/PIEFC.png" width="350" height="300" class="left"/> 
+<img src="../images/PIESC.png" width="350" height="300" class="right"/> 
+<img src="../images/PIETC.png" width="300" height="300" class="right"/> 
 
 
 
@@ -78,8 +78,8 @@ We wanted to see were the passangers embarked (Cherbourgh, Southampton, Queensto
 
 ### Embarked and Fare of Survivors and Victims
 
-<img src="/images/EFS.png" width="350" height="300" class="left"/> 
-<img src="/images/EFD.png" width="350" height="300" class="righ"/> 
+<img src="../images/EFS.png" width="350" height="300" class="left"/> 
+<img src="../images/EFD.png" width="350" height="300" class="righ"/> 
 
 
 ### Survivors
@@ -93,7 +93,7 @@ The clustering for the victim passangers was relatively similary, however, the a
 ## Was there any correlation between Fare and Class? 
 We wanted to investigate the socio-economic status so we need to have some sort of correlation between class and fare. We calculated Spearman's rank correlation and plotted a fit regression to view our results. 
 
-<img src="/images/SRC.png" class="center"/>
+<img src="../images/SRC.png" class="center"/>
 
 ### Fare and Class
 What we found was the the Spreaman correlation was **-0.69** a pretty good negative correlation. Meaning, as the fare increases the class descreases and we have shown that if you a passanger in class 1 you have more likely chance of survival especially if you are a female. 
