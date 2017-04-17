@@ -24,26 +24,28 @@ Subset the data so that you create a new data frame that contains
 cars that get 23 or more mpg (miles per gallon). Save it to a new data
 frame called efficient.
 ```{r}
-
+carsTwentyThreeOrMoreMpg <- subset(mtcars, mpg >= 23) #checks list of cars 23 or more mpg
+carsTwentyThreeOrMoreMpg #variable selected./
 ```
 
 3. How many cars get more than 23 mpg? Use one of the commands you
 learned in the demystifying.R to answer this question.
 ```{r}
-
+count <- dim(carsTwentyThreeOrMoreMpg) # count the dimensions 
+count # 7 cars and 11 columns of data 
 ```
 
 4. We can also use logical operators to find out which car(s) get greater
 than 30 miles per gallon (mpg) and have more than 100 raw horsepower.
 ```{r}
-subset(mtcars, mpg > 30 & hp > 100)
+subset(mtcars, mpg > 30 & hp > 100) #this acts as a boolean operator with the and method
 ```
 
 There's only one car that gets more than 30 mpg and 100 hp.
 
 5. What do you think this code does? Scroll down for the answer.
 ```{r}
-subset(mtcars, mpg < 14 | disp > 390)
+subset(mtcars, mpg < 14 | disp > 390) #this acts as a boolen operator with the or method
 ```
 
 Note: You may be familiar with the || operator in Java. R uses one single & for the logical
@@ -66,13 +68,14 @@ Now you try some.
 6. Print the cars that have a 1/4 mile time (qsec) less than or equal to
 16.90 seconds to the console.
 ```{r}
-
+subset(mtcars, qsec <= 16.90) 
 ```
 
 7. Save the subset of cars that weigh under 2000 pounds (weight is measured in lb/1000)
 to a variable called lightCars. Print the numbers of cars and the subset to the console.
 ```{r}
-
+lightCars <- subset(mtcars, wt < 2.0) #cars that weigh under 2000lbs
+lightCars
 ```
 
 8. You can also create new variables in a data frame. Let's say you wanted
@@ -80,7 +83,8 @@ to have the year of each car's model. We can create the variable
 mtcars$year. Here we'll assume that all of the models were from 1974.
 Run the code below.
 ```{r}
-mtcars$year <- 1974
+mtcars$year <- 1974 #creates new column or variable
+mtcars # this creates a new column of 1974 cars
 ```
 
 Notice how the number of variables changed in the work space. You can
@@ -90,21 +94,22 @@ examining the data in a table.
 To drop a variable, subset the data frame and select the variable you
 want to drop with a negative sign in front of it.
 ```{r}
-mtcars <- subset(mtcars, select = -year)
+mtcars <- subset(mtcars, select = -year) #drops the column year in the dataframe
 ```
 
 Notice, we are back to 11 variables in the data frame.
 
 9. What do you think this code does? Run it to find out.
 ```{r}
-mtcars$year <- c(1973, 1974)
+mtcars$year <- c(1973, 1974) #this does a column years and offsets 73 and 74
+mtcars
 ```
 
 Open the table of values to see what values year takes on.
 
 Drop the year variable from the data set.
 ```{r}
-
+mtcars <- subset(mtcars, select =-year) #drop the 73' 74' dataset
 ```
 
 
@@ -118,14 +123,14 @@ at the end of Lesson 3. You won't be quizzed on it, and it's not essential
 to keep going in this course. We just want you to try to get familiar with
 more code.
 ```{r}
-mtcars$wt
-cond <- mtcars$wt < 3
-cond
-mtcars$weight_class <- ifelse(cond, 'light', 'average')
-mtcars$weight_class
-cond <- mtcars$wt > 3.5
-mtcars$weight_class <- ifelse(cond, 'heavy', mtcars$weight_class)
-mtcars$weight_class
+mtcars$wt #select the weight column
+cond <- mtcars$wt < 3 #create weight that is less than 3 call cond
+cond #call cond 
+mtcars$weight_class <- ifelse(cond, 'light', 'average') #create new column called weight_class all statements that are 3 TRUE == 'light', FALSE == 'Average'
+mtcars$weight_class # calls the new column
+cond <- mtcars$wt > 3.5 # remakes new condition 
+mtcars$weight_class <- ifelse(cond, 'heavy', mtcars$weight_class) #if TRUE ='heave' if FALSE = keep variable in weight_class
+mtcars$weight_class # calls the new column 
 ```
 
 You have some variables in your workspace or environment like 'cond' and
@@ -148,8 +153,8 @@ need the knitr package to do that so let's install that now. **Uncomment** the
 following two lines of code and run them.
 
 ```{r}
-# install.packages('knitr', dependencies = T)
-# library(knitr)
+ install.packages('knitr', dependencies = T)
+ library(knitr); 
 ```
 
 Once you've installed knitr, **comment** out the two lines of code above.
@@ -163,6 +168,10 @@ answer a question to continue on in Lesson 2.
 
 Which car(s) have an mpg (miles per gallon) greater than or equal to 30
 OR hp (horsepower) less than 60? Create an R chunk of code to answer the question.
+```{r}
+carsMpgHorsePower <- subset(mtcars, mpg >= 30 | hp < 60) # Mpg >= 30 or horsepower < 60
+carsMpgHorsePower
+```
 
 
 
