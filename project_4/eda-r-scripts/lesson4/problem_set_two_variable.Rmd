@@ -1,28 +1,68 @@
 ---
 title: "problem_set_two_variable"
 output: html_document
+# Kris Anaya 
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r price vs x}
+library(ggplot2)
+data(diamonds)
+names(diamonds)
+ggplot(aes(x = x, y = price), data = diamonds) + 
+  geom_point() + xlim(3,9) #this scatter plot shows a exponential growth considering length to price. Meaning, the large the length the more the price. 
+```
+```{r correlations coeff}
+with(diamonds, cor.test(price, x, method = "pearson"))
+with(diamonds, cor.test(price, y, mehtod = "pearson"))
+with(diamonds, cor.test(price, z, menthod = "pearson"))
+# each dataset shows a positive correlation roughly similary between lengths of (x,y,z)
 ```
 
-## R Markdown
+```{r price vs depth}
+ggplot(aes(x = depth, y = price), data = diamonds) + 
+  geom_point(alpha = 1/100) + 
+  scale_x_continuous(breaks = seq(61, 63, 2))
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+summary(diamonds$depth) #must look at the relationship of the quartiles to see the lower and upper limits
+#horizontal relationship within the graph position if price is x and depth is y. However if you transpose the grid then it's a verticle relationship. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+with(diamonds, cor.test(depth, price , method = "pearson"))
 ```
 
-## Including Plots
+```{r price vs carat}
+ggplot(data = diamonds,aes(x = carat, y = price)) + 
+  xlim(0,quantile(diamonds$carat,0.99)) +
+  ylim(0,quantile(diamonds$price,0.99)) +
+  geom_point()
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+```{r price vs. volume}
+library(plyr)
+diamonds$volume <- (diamonds$x * diamonds$y * diamonds$z)
+ggplot(data = diamonds, aes(x = volume, y = price)) + 
+  geom_point()
+
+count(diamonds$volume == 0)
+detach("package:plyr", unload=TRUE)
+
+pf_exclude_zero_eight <- subset(diamonds, !(volume == 0 | volume >= 800)) #conditional operator for subset! ALWAYS REMEMBER THIS
+with(pf_exclude_zero_eight, cor.test(price, volume), method = "spearman")
+
+
+
+
+
+```
+
+```{r price vs volume}
+pf_exclude_zero_eight <- subset(diamonds, !(volume == 0 | volume >= 800)) #exclude with conditional properties
+ggplot(data = pf_exclude_zero_eight, aes(x = volume, y = price)) + 
+  geom_point(alpha = .05) + #transparenct ar alpha 0.05
+  geom_smooth(method = "lm") #adjust by linear model
+
+```
+
