@@ -66,3 +66,37 @@ ggplot(data = pf_exclude_zero_eight, aes(x = volume, y = price)) +
 
 ```
 
+```{r mean price clarity}
+#install.packages("dplyr")
+library(dplyr)
+names(diamonds)
+diamonds_clarity <- group_by(diamonds, clarity)
+diamondsByClarity <- summarise(diamonds_clarity, 
+                              mean_price = mean(price), 
+                              median_price = median(price), 
+                              min_price = min(price), 
+                              max_price = max(price), 
+                              n = n())
+diamondsByClarity <- arrange(diamondsByClarity)
+head(diamondsByClarity)
+```
+```{r bar chart clarity }
+diamonds_by_clarity <- group_by(diamonds, clarity)
+diamonds_mp_by_clarity <- summarise(diamonds_by_clarity, mean_price = mean(price))
+
+diamonds_by_color <- group_by(diamonds, color)
+diamonds_mp_by_color <- summarise(diamonds_by_color, mean_price = mean(price))
+
+#install.packages("gridExtra")
+library("gridExtra")
+
+names(diamonds_mp_by_clarity)
+
+p1 <- ggplot(diamonds_mp_by_clarity, aes(x = clarity, y = mean_price)) + geom_bar(stat = 'identity')
+p2 <- ggplot(diamonds_mp_by_color, aes(x = color, y = mean_price)) + geom_bar(stat = "identity")
+grid.arrange(p1,p2)
+
+names(diamonds_mp_by_color)
+?diamonds
+```
+
