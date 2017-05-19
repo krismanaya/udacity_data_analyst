@@ -1,0 +1,120 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r price histograms with facet wrap}
+library(ggplot2)
+data(diamonds)
+names(diamonds)
+ggplot(data = diamonds, aes(x = log(price))) + 
+  geom_histogram(aes(fill = cut)) + 
+  facet_wrap(~color) + 
+  scale_fill_brewer(palette = "Spectral")
+
+```
+
+
+thoughts: 
+for the range, typically you are going to use the by function and look 
+at the first and third quartile. 
+```{r scatter plot}
+ggplot(aes(x = table, y = price), data = diamonds) + 
+  geom_point(aes(color = cut))  + 
+  scale_fill_brewer(type = "qual")
+
+by(diamonds$table, diamonds$cut, summary)
+```
+
+
+thoughts: 
+what I want to do is create a variable in the data set 
+called volume, which is the volume of the cuts. Secondly, 
+I want to remove the top 1% of the diamonds so creat a subset and 
+quantile. With this use a conditional statement. 
+```{r Price vs Volume Scatter}
+diamonds$volume <- (diamonds$x * diamonds$y * diamonds$z)
+diamonds_volume_percent <- subset(diamonds, volume <= quantile(volume, .99)) #this gives me the lower 99% 
+ggplot(aes(x = volume, y = price), data = subset(diamonds_volume_percent, volume != 0)) + 
+  geom_point(aes(color = clarity)) + 
+  scale_y_log10() + 
+  scale_color_brewer(type = "div") + 
+  xlim(0,400)
+
+
+
+?quantile
+```
+
+
+Objective: 
+# Many interesting variables are derived from two or more others.
+# For example, we might wonder how much of a person's network on
+# a service like Facebook the user actively initiated. Two users
+# with the same degree (or number of friends) might be very
+# different if one initiated most of those connections on the
+# service, while the other initiated very few. So it could be
+# useful to consider this proportion of existing friendships that
+# the user initiated. This might be a good predictor of how active
+# a user is compared with their peers, or other traits, such as
+# personality (i.e., is this person an extrovert?).
+
+# Your task is to create a new variable called 'prop_initiated'
+# in the Pseudo-Facebook data set. The variable should contain
+# the proportion of friendships that the user initiated.
+
+# This programming assignment WILL BE automatically graded.
+
+```{r Explore many variables}
+pf <- read.csv('pseudo_facebook.tsv', sep = '\t')
+names(pf)
+pf$prop_initiated <- pf$friendships_initiated/pf$friend_count
+qplot(x = friendships_initiated, y = prop_initiated , data = pf) + 
+  geom_smooth()
+```
+
+
+
+```{r prop_initiaed vs tenure}
+pf$year_joined <- floor(2014 - pf$tenure/365)
+pf$year_joined.bucket <- cut(pf$year_joined, c(2004,2009,2011,2012,2014))
+ggplot(aes(x = tenure, y = prop_initiated), 
+       data = subset(pf, !is.na(year_joined.bucket))) + 
+  geom_line(aes(color = year_joined.bucket), stat = "summary", fun.y = median) + geom_smooth()
+
+ggplot(aes(x = tenure, y = prop_initiated), 
+       data = subset(pf, !is.na(year_joined.bucket))) + 
+  geom_line(aes(color = year_joined.bucket), stat = "summary", fun.y = mean) + geom_smooth()
+
+
+group1 <- subset(pf, year_joined.bucket == '(2012, 2014]')
+
+
+```
+
+# Create a scatter plot of the price/carat ratio
+# of diamonds. The variable x should be
+# assigned to cut. The points should be colored
+# by diamond color, and the plot should be
+# faceted by clarity.
+
+# The plot should look something like this.
+# http://i.imgur.com/YzbWkHT.jpg.
+
+# Note: In the link, a color palette of type
+# 'div' was used to color the histogram using
+# scale_color_brewer(type = 'div')
+
+# This assignment is not graded and
+# will be marked as correct when you submit.
+
+# ENTER YOUR CODE BELOW THIS LINE
+# ===========================================
+
+```{r Price/Carat Binned, Facete}
+ggplot(aes(x = cut, y = price/carat), data = diamonds) + 
+  geom_point(aes(color = color)) + 
+  facet_wrap(~clarity) + 
+  scale_color_brewer(type = "div")
+```
+
