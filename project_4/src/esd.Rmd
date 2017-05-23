@@ -105,3 +105,52 @@ ggplot(data = largest_cities_bsdf, aes(date, amount)) +
        caption = "source: .gov") 
 ```
 
+
+# Trump Dataset
+```{r load dataset trump}
+dtdf <- read.csv("P80001571-CA.csv", sep = ",", header = FALSE)
+
+colnames(dtdf) <- c("cmte_id", "cand_id", "canidate", "name","city", "state", "zip", "employer", "occupation", "amount", "date","receipt", "memo","memo_text", "form_tp", "file_number","tran_id", "election_tp") # rename columns 
+
+
+dtdf = dtdf[-1,] #drop first row
+myvars <- c("name","canidate","city","state","zip","employer","occupation","amount","date","receipt") #create data columns
+dtdf <- dtdf[myvars] #choose columns i'm interested in.
+
+dtdf$amount <- as.numeric(as.character(dtdf$amount)) #change amount to numeric
+dtdf$zip <- as.numeric(as.character(dtdf$zip)) #change zip to numeric#change date
+dtdf$date <- strptime(dtdf$date, "%d-%b-%y") #fix date
+dtdf$date <- as.POSIXlt(dtdf$date) #fix date
+
+largest_cities_dtdf <- subset(dtdf, city == c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH")) #sanders contributions in bigger cities
+
+refund_dtdf <- subset(dtdf, receipt == "Refund" & city == c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH"))  # largest cities who obtained a refund.
+
+
+largest_amount_dtdf <- subset(largest_cities_dtdf, amount > 0) #no refunds in dataset. 
+
+#line graph
+ggplot(data = largest_cities_dtdf, aes(date, amount)) + 
+  geom_line(aes(color = city)) + 
+  labs(title = "Line Graph", 
+       subtitle = "Amount vs Date", 
+       caption = "source: .gov") 
+
+
+#boxplot
+ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_dtdf) +
+  geom_boxplot() + labs(title = "Ordered Box Plot", 
+                        subtitle = "Amount vs. City", 
+                        caption = "source: .gov") + 
+  scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10))
+
+#hisogram
+theme_set(theme_bw())
+ggplot(refund_dtdf, aes(x=city, y=amount)) + 
+  geom_bar(stat="identity", width=.5, fill="tomato3") + 
+  labs(title="Ordered Bar Chart", 
+       subtitle="Amount vs. City", 
+       caption="source: gov") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+```
+
