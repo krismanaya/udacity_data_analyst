@@ -12,7 +12,7 @@ Notes:
 library('ggplot2')
 data("diamonds")
 names(diamonds)
-ggplot(aes(x = carat, y = price), data = diamonds) + 
+ggplot(aes(x = carat, y = price), data = dheiamonds) + 
   geom_point(fill = I('red'), color = I('black'), shape = 21) + 
   xlim(0,quantile(diamonds$carat, .99)) + 
   ylim(0, quantile(diamonds$price, .99)) + 

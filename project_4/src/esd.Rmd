@@ -5,28 +5,103 @@ date: "5/22/2017"
 output: html_document
 ---
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+### load packages
+```{r echo=FALSE, message=False, warning=False, packages}
+library(ggplot2)
+library(dplyr)
+library(GGally)
+library(scales)
+library(memisc)
+library(gridExtra)
+library(grid)
+library(RColorBrewer)
+library('bitops')
+library('RCurl')
 setwd("/Users/Anaya/repos/udacity_data_analyst/project_4/src") # set my directory. 
 ```
 
-## R Markdown
+# Bernie Dataset
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+thoughts: I discovered that there are refund amounts within the data set. Which threw me off.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r echo=False, Load_the_Data}
 
-```{r cars}
-summary(cars)
+
+bsdf <- read.csv(file = "P60007168-CA.csv", sep = ",", header = FALSE)
+
+colnames(bsdf) <- c("cmte_id", "cand_id", "cand_nm", "name",
+                    "city", "state", "zip", 
+                    "employer", "occupation",
+                    "amount", "date",
+                    "receipt", "memo",
+                    "memo_text", "form_tp", "file_number",
+                    "tan_id", "election_tp") # rename columns 
+
+bsdf  = bsdf[-1,] #drop first row in dataset
+
+myvars <- c("name","city","state","zip","employer","occupation","amount","date","receipt") #create data columns
+
+bsdf <- bsdf[myvars] #pick columns I need. 
+
+names(bsdf) # check if it's okay
+bsdf$amount <- as.numeric(as.character(bsdf$amount)) #change amount to numeric
+bsdf$zip <- as.numeric(as.character(bsdf$zip)) #change zip to numeric#change date
+bsdf$date <- strptime(bsdf$date, "%d-%b-%y")
+bsdf$date <- as.POSIXlt(bsdf$date)
+
+#subset dataframes 
+
+largest_cities_bsdf <- subset(bsdf, city == c("SAN FRANCISCO", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "OAKLAND",
+                                              "BERKELEY")) #sanders contributions in bigger cities
+
+refund_bsdf <- subset(bsdf, receipt == "Refund" & city == c("SAN FRANCISCO", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "OAKLAND",
+                                              "BERKELEY")) # largest cities who obtained a refund.
+
+
+largest_amount_bsdf <- subset(largest_cities_bsdf, amount > 0)
+
+head(sort(table(largest_cities_bsdf$amount), decreasing = F))
+largest_cities_bsdf
+ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_bsdf) +
+  geom_boxplot() + scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10))
+
 ```
 
-## Including Plots
+# Summary of the Dataset
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r echo=FALSE, summary}
+str(largest_cities_bsdf) #19,118 objects and 9 varaibles within the summary.
+
+summary(bsdf) #complete data set
+summary(bsdf$amount) #summary of amount 
+bsdf.lc_by_cities
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r echo=False, summary}
+
+
+#hisogram
+theme_set(theme_bw())
+ggplot(refund_bsdf, aes(x=city, y=amount)) + 
+  geom_bar(stat="identity", width=.5, fill="tomato3") + 
+  labs(title="Ordered Bar Chart", 
+       subtitle="Amount vs. City", 
+       caption="source: gov") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+#boxplot
+ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_bsdf) +
+  geom_boxplot() + labs(title = "Ordered Box Plot", 
+                        subtitle = "Amount vs. City", 
+                        caption = "source: .gov") + 
+  scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10))
+
+#line graph
+ggplot(data = largest_cities_bsdf, aes(date, amount)) + 
+  geom_line(aes(color = city)) + 
+  labs(title = "Line Graph", 
+       subtitle = "Amount vs Date", 
+       caption = "source: .gov") 
+```
+
