@@ -24,6 +24,8 @@ library(grid)
 library(RColorBrewer)
 library('bitops')
 library('RCurl')
+
+
 setwd("/Users/Anaya/repos/udacity_data_analyst/project_4/src") # set my directory. 
 ```
 
@@ -32,6 +34,20 @@ setwd("/Users/Anaya/repos/udacity_data_analyst/project_4/src") # set my director
 thoughts: I discovered that there are refund amounts within the data set. Which threw me off.
 
 ```{r echo=False, Load_the_Data}
+############################################# Map Datasets ##########################################################
+counties <- map_data("county")
+ca_county <-subset(counties, region == "california")
+
+#create a unique datafram using google long and lat queries. 
+cities <- as.data.frame(unique(bsdf$city))
+names(cities)[names(cities) == 'unique(bsdf$city)'] <- 'city'
+cities$city_state <- paste(as.character(cities$city), "CA", sep=", ") 
+cities.new <- cbind(geocode(as.character(cities$city_state)), cities)
+write.csv(cities.new, file = "California_geoLocation_new.csv",row.names=FALSE)
+
+## filling in columns with matching IDs from two dataframes in R
+# Source: http://stackoverflow.com/questions/25539326/filling-in-columns-with-matching-ids-from-two-dataframes-in-r
+geoloc <- read.csv('California_geoLocation_new.csv', row.names=NULL) #load dataset
 
 ############################################# Bernie Dataset ######################################################
 
@@ -56,6 +72,12 @@ bsdf$amount <- as.numeric(as.character(bsdf$amount)) #change amount to numeric
 bsdf$zip <- as.numeric(as.character(bsdf$zip)) #change zip to numeric#change date
 bsdf$date <- strptime(bsdf$date, "%d-%b-%y")
 bsdf$date <- as.POSIXlt(bsdf$date)
+
+nm <- c("lon", "lat") #add lat long 
+bsdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(bsdf$city), as.character(geoloc$city))]) #create loc dataset 
+
+set.seed(20000)
+sample_bernie <- bsdf[sample(1:length(bsdf$amount), 3000), ] #sample dataset for bernie
 
 #subset dataframes 
 
@@ -87,6 +109,12 @@ dtdf$zip <- as.numeric(as.character(dtdf$zip)) #change zip to numeric#change dat
 dtdf$date <- strptime(dtdf$date, "%d-%b-%y") #fix date
 dtdf$date <- as.POSIXlt(dtdf$date) #fix date
 
+nm <- c("lon", "lat") #add lat and lon
+dtdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(dtdf$city), as.character(geoloc$city))]) #apply it to trump dataset
+
+set.seed(20000)
+sample_trump <- bsdf[sample(1:length(dtdf$amount), 3000), ] #sample dataset for trump
+
 largest_cities_dtdf <- subset(dtdf, city == c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH")) #sanders contributions in bigger cities
 
 refund_dtdf <- subset(dtdf, receipt == "Refund" & city == c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH"))  # largest cities who obtained a refund.
@@ -105,7 +133,7 @@ summary(merge_bs_dt_df)
 largest_cities_merge <- subset(merge_bs_dt_df, city == c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH",
                                                          "OAKLAND", "BERKELEY", "SAN FRANCISCO")) # largest cities for both canidates
 
-largest_amount_merge<- subset(largest_cities_merge, amount > 0) # no refunds in ammount
+largest_amount_merge <- subset(largest_cities_merge, amount > 0) # no refunds in ammount
 
 
 #box plot for both canidates. 
@@ -133,7 +161,7 @@ head(ca_county)
 ggplot(data = ca_county, aes(x = long, y = lat, group = group)) + 
   geom_polygon(fill = I("linen")) + 
   geom_path(aes(color = subregion), linestyle = 1) +
-  geom_jitter(data = sample, aes(x =lon, y = lat, group= NULL), color = "blue", alpha = 1) + 
+  geom_jitter(data = sample_bernie, aes(x =lon, y = lat, group= NULL), color = "blue", alpha = 1) + 
   geom_jitter(data = sample_trump, aes(x = lon, y = lat, group = NULL), color = "red", alpha = 0.3) + 
   labs(title = "Map of contributors", 
        subtitle = "Trump (red) v. Bernie (blue)", 
@@ -176,7 +204,7 @@ ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_bsdf) +
 #line graph
 ggplot(data = largest_cities_bsdf, aes(date, amount)) + 
   geom_line(aes(color = city)) + 
-  labs(title = "Line Graph", 
+  labs(title = "Line Graph Bernie Sanders", 
        subtitle = "Amount vs Date", 
        caption = "source: .gov") 
 
@@ -189,59 +217,25 @@ ggpairs(bsdf_sampII,
         lower = list(continuous = wrap("points", shape = I("."))), 
         upper = list(continuous = wrap("box", outlier.shape = I("."))))  
 
-bsdf_sampII
 
 
+#bsdf_state_sample <- subset(bsdf, select = c(city, amount, name)) #subset the datqframe for bernie
+#bsdf_state_sample['region'] <- "california" #create a new column
+#levels(bsdf_state_sample$city) <- tolower(levels(bsdf_state_sample$city)) #make city all lower case
 
-# map 
-counties <- map_data("county")
-ca_county <-subset(counties, region == "california")
-head(ca_county)
+#bsdf_state_sample
+#str(ca_county)
+#ca_county_ss <- subset(ca_county, select = c(region,long,lat))
+#str(ca_county_ss)
 
-cities <- as.data.frame(unique(bsdf$city))
-names(cities)[names(cities) == 'unique(bsdf$city)'] <- 'city'
-cities$city_state <- paste(as.character(cities$city), "CA", sep=", ") 
-cities.new <- cbind(geocode(as.character(cities$city_state)), cities)
-write.csv(cities.new, file = "California_geoLocation_new.csv",row.names=FALSE)
-
-geoloc <- read.csv('California_geoLocation_new.csv', row.names=NULL)
-
-## filling in columns with matching IDs from two dataframes in R
-# Source: http://stackoverflow.com/questions/25539326/filling-in-columns-with-matching-ids-from-two-dataframes-in-r
-nm <- c("lon", "lat")
-bsdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(bsdf$city), as.character(geoloc$city))])
+#set.seed(20000)
+#bsdf_state_sampleII <- bsdf_state_sample[sample(1:length(bsdf_state_sample$amount), 3000), ]
+#bsdf_state_sampleII = rename(bsdf_state_sampleII, city = "subregion")
+#test <- merge(ca_county,bsdf_state_sampleII, by = "subregion")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-bsdf_state_sample <- subset(bsdf, select = c(city, amount, name)) #subset the datqframe for bernie
-bsdf_state_sample['region'] <- "california" #create a new column
-levels(bsdf_state_sample$city) <- tolower(levels(bsdf_state_sample$city)) #make city all lower case
-
-bsdf_state_sample
-str(ca_county)
-ca_county_ss <- subset(ca_county, select = c(region,long,lat))
-str(ca_county_ss)
-
-set.seed(20000)
-bsdf_state_sampleII <- bsdf_state_sample[sample(1:length(bsdf_state_sample$amount), 3000), ]
-bsdf_state_sampleII = rename(bsdf_state_sampleII, city = "subregion")
-test <- merge(ca_county,bsdf_state_sampleII, by = "subregion")
-
-
-bsdf_state_sampleIII <- subset(bsdf_state_sampleII, subregion == "ventura")
-bsdf_state_sampleII
+#bsdf_state_sampleIII <- subset(bsdf_state_sampleII, subregion == "ventura")
+#bsdf_state_sampleII
 ```
 
 
@@ -251,7 +245,7 @@ bsdf_state_sampleII
 #line graph
 ggplot(data = largest_cities_dtdf, aes(date, amount)) + 
   geom_line(aes(color = city)) + 
-  labs(title = "Line Graph", 
+  labs(title = "Line Graph Donald Trump", 
        subtitle = "Amount vs Date", 
        caption = "source: .gov") 
 
@@ -276,65 +270,5 @@ ggplot(refund_dtdf, aes(x=city, y=amount)) +
 
 ```
 ```{r echo=False, create a bernie map}
-# map 
-counties <- map_data("county")
-ca_county <-subset(counties, region == "california")
-
-head(ca_county)
-
-
-#bernie lon_lat_csv 
-cities <- as.data.frame(unique(bsdf$city))
-names(cities)[names(cities) == 'unique(bsdf$city)'] <- 'city'
-cities$city_state <- paste(as.character(cities$city), "CA", sep=", ") 
-cities.new <- cbind(geocode(as.character(cities$city_state)), cities)
-write.csv(cities.new, file = "California_geoLocation_new.csv",row.names=FALSE)
-
-geoloc <- read.csv('California_geoLocation_new.csv', row.names=NULL)
-
-## filling in columns with matching IDs from two dataframes in R
-# Source: http://stackoverflow.com/questions/25539326/filling-in-columns-with-matching-ids-from-two-dataframes-in-r
-nm <- c("lon", "lat")
-bsdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(bsdf$city), as.character(geoloc$city))])
-
-
-set.seed(20000)
-sample <- bsdf[sample(1:length(bsdf$amount), 3000), ]
-ggplot(data = sample, aes(x=lon, y =lat)) +
-  geom_polygon() + 
-  geom_point(aes(color = amount))  
-  
-head(ca_county)
-california_plot <- ggplot(data = ca_county, mapping = aes(x = long, y = lat, group = group)) + 
-  coord_fixed(1.3) + 
-  geom_polygon(color = "black", fill = "gray") 
-
-b1 <- ggplot(data = ca_county, aes(x = long, y = lat, group = group)) + 
-      geom_polygon() + 
-      geom_path(aes(color = subregion), linestyle = 2) +
-      geom_jitter(data = sample, aes(x =lon, y = lat, group= NULL), color = "red", alpha = 0.8) 
-  
+str(bsdf)
 ```
-```{r echo=false, create a trump map}
-# map 
-counties <- map_data("county")
-ca_county <-subset(counties, region == "california")
-
-geoloc <- read.csv('California_geoLocation_new.csv', row.names=NULL) #load dataset
-
-
-## filling in columns with matching IDs from two dataframes in R
-# Source: http://stackoverflow.com/questions/25539326/filling-in-columns-with-matching-ids-from-two-dataframes-in-r
-nm <- c("lon", "lat")
-dtdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(dtdf$city), as.character(geoloc$city))]) #apply it to trump dataset
-
-set.seed(20000)
-sample_trump <- bsdf[sample(1:length(dtdf$amount), 3000), ]
-
-t1 <- ggplot(data = ca_county, aes(x = long, y = lat, group = group)) + 
-  geom_polygon() + 
-  geom_path(aes(color = subregion), linestyle = 2) +
-  geom_jitter(data = sample_trump, aes(x =lon, y = lat, group= NULL), color = "yellow", alpha = 0.8) 
-grid.arrange(b1,t1, ncol = 1)
-```
-
