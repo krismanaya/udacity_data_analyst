@@ -1,12 +1,11 @@
 ---
-title: "Bernie Sanders contributions (2016-2017)."
+title: "Bernie Sanders & Donald J. Trump Contributions."
 author: "Kris Anaya"
 date: "5/22/2017"
 output: html_document
 ---
 
-### load packages
-```{r echo=FALSE, message=False, warning=False, packages}
+```{r echo=FALSE, message=FALSE, warning=FALSE, load_packages}
 #install.packages("stringr")
 #install.packages(c("maps","mapdata"))
 #install.packages("ggmap")
@@ -29,25 +28,8 @@ library('RCurl')
 setwd("/Users/Anaya/repos/udacity_data_analyst/project_4/src") # set my directory. 
 ```
 
-# Bernie-Trump Dataset
 
-thoughts: I discovered that there are refund amounts within the data set. Which threw me off.
-
-```{r echo=False, Load_the_Data}
-############################################# Map Datasets ##########################################################
-counties <- map_data("county")
-ca_county <-subset(counties, region == "california")
-
-#create a unique datafram using google long and lat queries. 
-cities <- as.data.frame(unique(bsdf$city))
-names(cities)[names(cities) == 'unique(bsdf$city)'] <- 'city'
-cities$city_state <- paste(as.character(cities$city), "CA", sep=", ") 
-cities.new <- cbind(geocode(as.character(cities$city_state)), cities)
-write.csv(cities.new, file = "California_geoLocation_new.csv",row.names=FALSE)
-
-## filling in columns with matching IDs from two dataframes in R
-# Source: http://stackoverflow.com/questions/25539326/filling-in-columns-with-matching-ids-from-two-dataframes-in-r
-geoloc <- read.csv('California_geoLocation_new.csv', row.names=NULL) #load dataset
+```{r echo=FALSE, message=FALSE, warning=FALSE, Load_the_Data}
 
 ############################################# Bernie Dataset ######################################################
 
@@ -73,25 +55,6 @@ bsdf$zip <- as.numeric(as.character(bsdf$zip)) #change zip to numeric#change dat
 bsdf$date <- strptime(bsdf$date, "%d-%b-%y")
 bsdf$date <- as.POSIXlt(bsdf$date)
 
-nm <- c("lon", "lat") #add lat long 
-bsdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(bsdf$city), as.character(geoloc$city))]) #create loc dataset 
-
-set.seed(20000)
-sample_bernie <- bsdf[sample(1:length(bsdf$amount), 3000), ] #sample dataset for bernie
-
-#subset dataframes 
-
-largest_cities_bsdf <- subset(bsdf, city == c("SAN FRANCISCO", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "OAKLAND",
-                                              "BERKELEY")) #sanders contributions in bigger cities
-
-refund_bsdf <- subset(bsdf, receipt == "Refund" & city == c("SAN FRANCISCO", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "OAKLAND",
-                                              "BERKELEY")) # largest cities who obtained a refund.
-
-
-largest_amount_bsdf <- subset(largest_cities_bsdf, amount > 0) #no refunds in dataset
-
-head(bsdf) # look at dataset
-
 
 ############################################# Trump Dataset ######################################################
 
@@ -109,9 +72,47 @@ dtdf$zip <- as.numeric(as.character(dtdf$zip)) #change zip to numeric#change dat
 dtdf$date <- strptime(dtdf$date, "%d-%b-%y") #fix date
 dtdf$date <- as.POSIXlt(dtdf$date) #fix date
 
-nm <- c("lon", "lat") #add lat and lon
-dtdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(dtdf$city), as.character(geoloc$city))]) #apply it to trump dataset
 
+############################################# Map Datasets ##########################################################
+counties <- map_data("county")
+ca_county <-subset(counties, region == "california")
+
+#create a unique datafram using google long and lat queries. 
+#cities <- as.data.frame(unique(bsdf$city))
+#names(cities)[names(cities) == 'unique(bsdf$city)'] <- 'city'
+#cities$city_state <- paste(as.character(cities$city), "CA", sep=", ") 
+#cities.new <- cbind(geocode(as.character(cities$city_state)), cities)
+#write.csv(cities.new, file = "California_geoLocation_new.csv",row.names=FALSE)
+
+## filling in columns with matching IDs from two dataframes in R
+# Source: http://stackoverflow.com/questions/25539326/filling-in-columns-with-matching-ids-from-two-dataframes-in-r
+geoloc <- read.csv('California_geoLocation_new.csv', row.names=NULL) #load dataset
+
+nm <- c("lon", "lat") #add lat long 
+bsdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(bsdf$city), as.character(geoloc$city))]) #create loc dataset for bernie
+dtdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(dtdf$city), as.character(geoloc$city))]) #apply it to trump dataset 
+
+
+
+############################################## Sample Datasets ###########################################################
+
+#Bernie sample
+set.seed(20000)
+sample_bernie <- bsdf[sample(1:length(bsdf$amount), 3000), ] #sample dataset for bernie
+
+#subset dataframes 
+
+largest_cities_bsdf <- subset(bsdf, city == c("SAN FRANCISCO", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "OAKLAND",
+                                              "BERKELEY")) #sanders contributions in bigger cities
+
+refund_bsdf <- subset(bsdf, receipt == "Refund" & city == c("SAN FRANCISCO", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "OAKLAND",
+                                              "BERKELEY")) # largest cities who obtained a refund.
+
+
+largest_amount_bsdf <- subset(largest_cities_bsdf, amount > 0) #no refunds in dataset
+
+
+#Trump Sample
 set.seed(20000)
 sample_trump <- bsdf[sample(1:length(dtdf$amount), 3000), ] #sample dataset for trump
 
@@ -122,19 +123,295 @@ refund_dtdf <- subset(dtdf, receipt == "Refund" & city == c("BAKERSFIELD", "SAN 
 
 largest_amount_dtdf <- subset(largest_cities_dtdf, amount > 0) #no refunds in dataset. 
 
-head(dtdf) # look at dataset
 
 
 ############################################## Merge Dataset ###########################################################
 merge_bs_dt_df <- merge(bsdf, dtdf, all = TRUE) # merge both datasets
-
-summary(merge_bs_dt_df)
 
 largest_cities_merge <- subset(merge_bs_dt_df, city == c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH",
                                                          "OAKLAND", "BERKELEY", "SAN FRANCISCO")) # largest cities for both canidates
 
 largest_amount_merge <- subset(largest_cities_merge, amount > 0) # no refunds in ammount
 
+
+
+############################################ Sample Merge Dataset ######################################################
+#create only Bernie and Trump: 
+merge_bs_dt_df_subset <- merge_bs_dt_df[merge_bs_dt_df$canidate %in% c("Trump, Donald J.","Sanders, Bernard"),]
+
+#create some variables that I want for correlation. 
+merge_bs_dt_df_subset <- subset(merge_bs_dt_df, select = c(canidate, amount))
+
+#drop unused levels
+merge_bs_dt_df_subset <- droplevels(merge_bs_dt_df_subset)
+
+```
+
+This report explores a dataset containing canidates and attributes for approximately 490,000 contributions. 
+
+# Univariate Plot Section 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, univariate_plot}
+
+
+
+################################################# Amount ###################################################
+
+str(merge_bs_dt_df) #observe merge data
+
+summary(merge_bs_dt_df) #view summary of data
+
+# create histogram of count vs amount facet_wrap by canidates. 
+qplot(x = amount, data = merge_bs_dt_df_subset, color = I("black"), fill = I("firebrick4")) + 
+  labs(title = "Bernie v Trump Contributions",
+       subtitle = "Count vs. Amount", 
+       caption = ".gov") + 
+  facet_wrap(~canidate) +
+  scale_x_continuous(limits = c(0,1000), breaks = seq(0,1000,100)) + 
+  scale_y_continuous(limits = c(0,10000), breaks = seq(0,10000,1000)) 
+
+#take the sqrt and then scale it by base 10.
+qplot(x = amount, data = merge_bs_dt_df_subset, color = I("black"), fill = I("firebrick4")) + 
+  labs(title = "Bernie v Trump Contributions Base 10",
+       subtitle = "Count vs. Amount", 
+       caption = ".gov") + 
+  facet_wrap(~canidate) +
+  scale_x_continuous(limits = c(0,1000), breaks = seq(0,2000,100)) +
+  coord_trans(y ="sqrt") + 
+  scale_y_log10() 
+```
+
+Transformed both long tail-esque data to better understand the distribution of amount by each canidate. The transformed amount appears realtively similary with both canidates. Although, 
+Sanders has a bit more contributiosn that are less then the fifty-dollar range peaking above 10 thousand, while Trump appears to have a larger count of amount around the nine-hundred dollar range. Let's investigate 
+some other variables like cities, Occupation and name.  
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, univariate_plot_partII}
+
+
+################################################## Cities ################################################
+city_text <- element_text(size = 3) #change x.axis text 
+# creat a subset of merge_bs_dt_df with largest mentropolitan cities and plot them using qplot function. 
+choose_city_df_sample <- subset(merge_bs_dt_df, merge_bs_dt_df$city %in% c("BAKERSFIELD", "SAN JOSE", "SAN FRANCISCO", "BERKELEY", "LOS ANGELES",
+                                                                           "SACRAMENTO","SAN DIEGO", "OAKLAND", "HUNTINGTON BEACH"))
+qplot(x = city, data = choose_city_df_sample, color = I("black"), fill = I("paleturquoise1")) + 
+  labs(title = "Bernie v Trump Contributions",
+       subtitle = "Count vs. City", 
+       caption = ".gov") + 
+  theme(axis.text.x = city_text) + 
+  facet_wrap(~canidate) 
+
+###################################################### Occupation #############################################
+occupation_text <- element_text(size = 4) #change x.axis text
+# create a subset of merge_bs_dt_df with largest occupations in data set and plot. 
+choose_occupation_df_sample <- subset(merge_bs_dt_df, merge_bs_dt_df$occupation %in% c("NOT EMPLOYED", "RETIRED", "INFORMATION REQUESTED", 
+                                                                                       "TEACHER", "ENGINEER"))
+
+qplot(x = occupation, data = choose_occupation_df_sample, color = I("black"), fill = I("pink3")) + 
+  labs(title = "Bernie v Trump Contributions", 
+       subtitle = "Count vs. Occupation", 
+       caption = ".gov") + 
+  theme(axis.text.x = occupation_text) + 
+  facet_wrap(~canidate)
+
+
+
+############################################# Name #############################################
+name_text <- element_text(size = 5) #change x.axis text
+#create a subset of merge_bs_dt_df with most contributed by name and plot.  
+choose_name_df_sample <- subset(merge_bs_dt_df, merge_bs_dt_df$name %in% c("WEIL, MONIQUE", "MCLENNAN, MARLYN", "AUSLENDER, LEONARD", "ISERI, MARTIN", 
+                                                                            "SPEAR, JOSEPH", "DAVIDSON, LISA", "(Other)"))
+
+qplot(x = name, data = choose_name_df_sample, color = I("black"), fill = I("orchid2")) + 
+  labs(title = "Bernie V Trump Contributions", 
+       subtitle = "Count vs. Name", 
+       caption = ".gov") + 
+  theme(axis.text.x = occupation_text) + 
+  facet_wrap(~canidate)
+```
+
+Most Major cities contributed to Bernie's campaign, with pretty smiliary contributions in Bakersfield and Hunnigton Beach. A majority of occuptations that contributed to Bernie's campaign are "Not Employed", 
+while more in Trump's contributions are "RETIRED". Finally, that contributed more then two hundred contributions seem to support the Bernied campaign rather than Trump's. It looks like no large multiple contributions 
+were made with the Trump campaign in California. 
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, not_employed}
+
+#subset data set with people unemployed
+not_employed_df <- subset(merge_bs_dt_df, occupation == "NOT EMPLOYED")
+
+#create plot of amount by unemployment
+qplot(x = amount, data = not_employed_df, color = I("black"), fill=  I('#F79420')) +
+  labs(title = "Bernie V Trump Contributions", 
+       subtitle = "Count vs. Name", 
+       caption = ".gov") +
+  scale_x_continuous(limits = c(0,500)) + 
+  scale_y_continuous(limits = c(0,1000)) + 
+  scale_y_log10() + 
+  facet_wrap(~canidate)
+
+#create a summary of amount by state
+by(not_employed_df$amount, not_employed_df$state, summary)
+```
+If we consider the unemployment between two canidates it would seem that mister Sanders has the largest. Most poeple who are unemployed 
+fall into the zero to hundred dollar amount while we see a converging pattern as the amount increases. Within the summary we see that 
+the median is exactly twenty-seven dollars the same amount which Mr. Sanders proclaimed in his campaign speeches. 
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, largest_contributors}
+
+#subset datafram based on name
+largest_cont_df <- subset(merge_bs_dt_df, merge_bs_dt_df$name %in% c("WEIL, MONIQUE", "MCLENNAN, MARLYN", "AUSLENDER, LEONARD", "ISERI, MARTIN", 
+                                                                            "SPEAR, JOSEPH", "DAVIDSON, LISA")) 
+
+#create regular qplot based on amount
+qplot(x = amount, data = largest_cont_df) + 
+  labs(title = "Largest Contributors")
+
+
+#create limits of plot based on amount 
+qplot(x = amount, data = largest_cont_df) + 
+  labs(title = "Largest Contributors") + 
+  scale_x_continuous(limits = c(0,500)) + 
+  scale_y_continuous(limits = c(0,300))
+
+
+#remove outliers
+qplot(x = amount, data = largest_cont_df) + 
+  labs(title = "Largest Contributors") + 
+  scale_x_continuous(limits = c(0,150)) + 
+  scale_y_continuous(limits = c(0,290))
+
+
+#skew tail then take a logtransform 
+qplot(x = amount, data = largest_cont_df) + 
+  labs(title = "Largest Contributors") + 
+  scale_x_continuous(limits = c(0,150)) + 
+  scale_y_continuous(limits = c(0,290)) + 
+  scale_y_log10()
+  
+
+#color plot 
+qplot(x = amount, data = largest_cont_df, color = I("black"), fill = I('#099DD9')) + 
+  labs(title = "Largest Contributors") + 
+  scale_x_continuous(limits = c(0,150)) + 
+  scale_y_continuous(limits = c(0,290)) + 
+  scale_y_log10() + 
+  facet_wrap(~name) 
+
+
+#change text size
+occupation_text <- element_text(size = 2) #change x.axis text
+
+#create a plot of occupation from largest contributors
+qplot(x = occupation, data = largest_cont_df, color = I("black"), fill = I("#099DD9")) + 
+  labs(title = "Largest Contributors") + 
+  theme(axis.text.x = occupation_text) + 
+  facet_wrap(~name)
+#largest amounts across the board from the names dataframe
+summary(largest_cont_df$amount)
+
+
+```
+
+I wanted to do a step by step approach of the dataset of the names who contributed the most. All of these names contributed to the Bernie Sanders campaign as was visualized above. When we zoom in and look closer at the data 
+and seperate the names in each column while taking a log transformation of the slightly skewed chart we can get a very clear visualization of how the contributors spread out there payments. I didn't want to get into the refund payments just yet 
+in the data set because it requires multiple variables to investigate further, but as you can see from the chart above most of the contributions to the Sanders Campaign were paid around a wide variety of rangs.Furtheremore, I wanted to look closer at the contributors employment status. You can see that people had standard employments such as Teacher, Not Employed, Retired, Clerk and Photographer. What striked me odd was some people changed there occupation with donations for example MCLENNAN, MARLYN was listed as RETIRED and NOT EMPLOYED. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+
+#hisogram
+theme_set(theme_bw())
+ggplot(refund_bsdf, aes(x=city, y=amount)) + 
+  geom_bar(stat="identity", width=.5, fill="tomato3") + 
+  labs(title="Ordered Bar Chart", 
+       subtitle="Amount vs. City", 
+       caption="source: gov") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+#boxplot
+ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_bsdf) +
+  geom_boxplot() + labs(title = "Ordered Box Plot", 
+                        subtitle = "Amount vs. City", 
+                        caption = "source: .gov") + 
+  scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10))
+
+#line graph
+ggplot(data = largest_cities_bsdf, aes(date, amount)) + 
+  geom_line(aes(color = city)) + 
+  labs(title = "Line Graph Bernie Sanders", 
+       subtitle = "Amount vs Date", 
+       caption = "source: .gov") 
+
+
+#cross validation matrix 
+#set.seed(2000) # set the seed at #2000
+#bsdf_samp <- bsdf[sample(1:length(bsdf$amount), 1000), ]
+#bsdf_sampII <- subset(bsdf_samp, select  = c(city, amount))
+#ggpairs(bsdf_sampII, 
+        #lower = list(continuous = wrap("points", shape = I("."))), 
+        #upper = list(continuous = wrap("box", outlier.shape = I("."))))  
+
+
+
+#bsdf_state_sample <- subset(bsdf, select = c(city, amount, name)) #subset the datqframe for bernie
+#bsdf_state_sample['region'] <- "california" #create a new column
+#levels(bsdf_state_sample$city) <- tolower(levels(bsdf_state_sample$city)) #make city all lower case
+
+#bsdf_state_sample
+#str(ca_county)
+#ca_county_ss <- subset(ca_county, select = c(region,long,lat))
+#str(ca_county_ss)
+
+#set.seed(20000)
+#bsdf_state_sampleII <- bsdf_state_sample[sample(1:length(bsdf_state_sample$amount), 3000), ]
+#bsdf_state_sampleII = rename(bsdf_state_sampleII, city = "subregion")
+#test <- merge(ca_county,bsdf_state_sampleII, by = "subregion")
+
+
+#bsdf_state_sampleIII <- subset(bsdf_state_sampleII, subregion == "ventura")
+#bsdf_state_sampleII
+```
+
+
+# Trump Dataset
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+#line graph
+ggplot(data = largest_cities_dtdf, aes(date, amount)) + 
+  geom_line(aes(color = city)) + 
+  labs(title = "Line Graph Donald Trump", 
+       subtitle = "Amount vs Date", 
+       caption = "source: .gov") 
+
+
+#boxplot
+ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_dtdf) +
+  geom_boxplot() + labs(title = "Ordered Box Plot", 
+                        subtitle = "Amount vs. City", 
+                        caption = "source: .gov") + 
+  scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10))
+
+#hisogram
+theme_set(theme_bw())
+ggplot(refund_dtdf, aes(x=city, y=amount)) + 
+  geom_bar(stat="identity", width=.5, fill="tomato3") + 
+  labs(title="Ordered Bar Chart", 
+       subtitle="Amount vs. City", 
+       caption="source: gov") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+
+
+```
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+#box plot of payments by canidate. 
+ggplot(aes(x = canidate, y = amount, fill = canidate), data = merge_bs_dt_df_subset) +
+  geom_boxplot() + labs(title = "Ordered Box Plot", 
+                        subtitle = "Amount vs. City", 
+                        caption = "source: .gov") + 
+  scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10))  
 
 #box plot for both canidates. 
 ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_merge) +
@@ -167,108 +444,4 @@ ggplot(data = ca_county, aes(x = long, y = lat, group = group)) +
        subtitle = "Trump (red) v. Bernie (blue)", 
        caption= "source: .gov")  + 
        coord_map() 
-
-  
-```
-
-# Summary of the Dataset
-
-
-```{r echo=FALSE, summary}
-str(largest_cities_bsdf) #19,118 objects and 9 varaibles within the summary.
-summary(bsdf) #complete data set
-summary(bsdf$amount) #summary of amount 
-summary(dtdf)
-summary(merge_bs_dt_df)
-```
-
-```{r echo=False, plot of bernie dataset}
-
-
-#hisogram
-theme_set(theme_bw())
-ggplot(refund_bsdf, aes(x=city, y=amount)) + 
-  geom_bar(stat="identity", width=.5, fill="tomato3") + 
-  labs(title="Ordered Bar Chart", 
-       subtitle="Amount vs. City", 
-       caption="source: gov") + 
-  theme(axis.text.x = element_text(angle=65, vjust=0.6))
-
-#boxplot
-ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_bsdf) +
-  geom_boxplot() + labs(title = "Ordered Box Plot", 
-                        subtitle = "Amount vs. City", 
-                        caption = "source: .gov") + 
-  scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10))
-
-#line graph
-ggplot(data = largest_cities_bsdf, aes(date, amount)) + 
-  geom_line(aes(color = city)) + 
-  labs(title = "Line Graph Bernie Sanders", 
-       subtitle = "Amount vs Date", 
-       caption = "source: .gov") 
-
-
-#cross validation matrix 
-set.seed(2000) # set the seed at #2000
-bsdf_samp <- bsdf[sample(1:length(bsdf$amount), 1000), ]
-bsdf_sampII <- subset(bsdf_samp, select  = c(city, amount))
-ggpairs(bsdf_sampII, 
-        lower = list(continuous = wrap("points", shape = I("."))), 
-        upper = list(continuous = wrap("box", outlier.shape = I("."))))  
-
-
-
-#bsdf_state_sample <- subset(bsdf, select = c(city, amount, name)) #subset the datqframe for bernie
-#bsdf_state_sample['region'] <- "california" #create a new column
-#levels(bsdf_state_sample$city) <- tolower(levels(bsdf_state_sample$city)) #make city all lower case
-
-#bsdf_state_sample
-#str(ca_county)
-#ca_county_ss <- subset(ca_county, select = c(region,long,lat))
-#str(ca_county_ss)
-
-#set.seed(20000)
-#bsdf_state_sampleII <- bsdf_state_sample[sample(1:length(bsdf_state_sample$amount), 3000), ]
-#bsdf_state_sampleII = rename(bsdf_state_sampleII, city = "subregion")
-#test <- merge(ca_county,bsdf_state_sampleII, by = "subregion")
-
-
-#bsdf_state_sampleIII <- subset(bsdf_state_sampleII, subregion == "ventura")
-#bsdf_state_sampleII
-```
-
-
-# Trump Dataset
-```{r echo=False, plot of trump dataset}
-
-#line graph
-ggplot(data = largest_cities_dtdf, aes(date, amount)) + 
-  geom_line(aes(color = city)) + 
-  labs(title = "Line Graph Donald Trump", 
-       subtitle = "Amount vs Date", 
-       caption = "source: .gov") 
-
-
-#boxplot
-ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_dtdf) +
-  geom_boxplot() + labs(title = "Ordered Box Plot", 
-                        subtitle = "Amount vs. City", 
-                        caption = "source: .gov") + 
-  scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10))
-
-#hisogram
-theme_set(theme_bw())
-ggplot(refund_dtdf, aes(x=city, y=amount)) + 
-  geom_bar(stat="identity", width=.5, fill="tomato3") + 
-  labs(title="Ordered Bar Chart", 
-       subtitle="Amount vs. City", 
-       caption="source: gov") + 
-  theme(axis.text.x = element_text(angle=65, vjust=0.6))
-
-
-
-```
-```{r echo=False, create a bernie map}
-str(bsdf)
 ```
