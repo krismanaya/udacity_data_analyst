@@ -49,7 +49,6 @@ myvars <- c("name","canidate","city","state","zip","employer","occupation","amou
 
 bsdf <- bsdf[myvars] #pick columns I need. 
 
-
 bsdf$amount <- as.numeric(as.character(bsdf$amount)) #change amount to numeric
 bsdf$zip <- as.numeric(as.character(bsdf$zip)) #change zip to numeric#change date
 bsdf$date <- strptime(bsdf$date, "%d-%b-%y")
@@ -105,8 +104,9 @@ sample_bernie <- bsdf[sample(1:length(bsdf$amount), 3000), ] #sample dataset for
 largest_cities_bsdf <- subset(bsdf, city == c("SAN FRANCISCO", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "OAKLAND",
                                               "BERKELEY")) #sanders contributions in bigger cities
 
-refund_bsdf <- subset(bsdf, receipt == "Refund" & city == c("SAN FRANCISCO", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "OAKLAND",
-                                              "BERKELEY")) # largest cities who obtained a refund.
+refund_bsdf <- subset(bsdf, receipt == "Refund" & city ==  c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH",
+                                                            "OAKLAND", "BERKELEY", "SAN FRANCISCO"))  # largest cities who obtained a refund.
+
 
 
 largest_amount_bsdf <- subset(largest_cities_bsdf, amount > 0) #no refunds in dataset
@@ -118,7 +118,8 @@ sample_trump <- bsdf[sample(1:length(dtdf$amount), 3000), ] #sample dataset for 
 
 largest_cities_dtdf <- subset(dtdf, city == c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH")) #sanders contributions in bigger cities
 
-refund_dtdf <- subset(dtdf, receipt == "Refund" & city == c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH"))  # largest cities who obtained a refund.
+refund_dtdf <- subset(dtdf, receipt == "Refund" & city ==  c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH",
+                                                         "OAKLAND", "BERKELEY", "SAN FRANCISCO"))   # largest cities who obtained a refund.
 
 
 largest_amount_dtdf <- subset(largest_cities_dtdf, amount > 0) #no refunds in dataset. 
@@ -292,118 +293,284 @@ qplot(x = amount, data = largest_cont_df) +
 
 #color plot 
 qplot(x = amount, data = largest_cont_df, color = I("black"), fill = I('#099DD9')) + 
-  labs(title = "Largest Contributors") + 
+  labs(title = "Bernie V Trump Contributions", 
+       subtitle = "Largest Contributors by Amount", 
+       caption = ".gov") +
   scale_x_continuous(limits = c(0,150)) + 
   scale_y_continuous(limits = c(0,290)) + 
   scale_y_log10() + 
   facet_wrap(~name) 
 
+```
 
+I wanted to do a step by step approach of the dataset of the names who contributed the most. All of these names contributed to the Bernie Sanders campaign as was visualized above. When we zoom in and look closer at the data 
+and seperate the names in each column while taking a log transformation of the slightly skewed chart we can get a very clear visualization of how the contributors spread out there payments. I didn't want to get into the refund payments just yet in the data set because it requires multiple variables to investigate further, but as you can see from the chart above most of the contributions to the Sanders Campaign were paid around a wide variety of ranges.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+str(merge_bs_dt_df)
+summary(merge_bs_dt_df)
 #change text size
-occupation_text <- element_text(size = 2) #change x.axis text
+occupation_text <- element_text(size = 5) #change x.axis text
 
 #create a plot of occupation from largest contributors
 qplot(x = occupation, data = largest_cont_df, color = I("black"), fill = I("#099DD9")) + 
-  labs(title = "Largest Contributors") + 
+  labs(title = "Bernie V Trump Contributions", 
+       subtitle = "Largest Contributors by Occupation", 
+       caption = ".gov") +
   theme(axis.text.x = occupation_text) + 
   facet_wrap(~name)
 #largest amounts across the board from the names dataframe
 summary(largest_cont_df$amount)
 
-
 ```
 
-I wanted to do a step by step approach of the dataset of the names who contributed the most. All of these names contributed to the Bernie Sanders campaign as was visualized above. When we zoom in and look closer at the data 
-and seperate the names in each column while taking a log transformation of the slightly skewed chart we can get a very clear visualization of how the contributors spread out there payments. I didn't want to get into the refund payments just yet 
-in the data set because it requires multiple variables to investigate further, but as you can see from the chart above most of the contributions to the Sanders Campaign were paid around a wide variety of rangs.Furtheremore, I wanted to look closer at the contributors employment status. You can see that people had standard employments such as Teacher, Not Employed, Retired, Clerk and Photographer. What striked me odd was some people changed there occupation with donations for example MCLENNAN, MARLYN was listed as RETIRED and NOT EMPLOYED. 
+In this second graph concerning occupation you can see that people had standard employments such as Teacher, Not Employed, Retired, Clerk and Photographer. 
+What striked me odd in this barplot was some people changed there occupation with donations for example MCLENNAN, MARLYN was listed as RETIRED and NOT EMPLOYED. 
+
+
+# Univariate Analysis 
+
+## What is the structure of your dataset? 
+
+This report explores a dataset containing canidates and attributes for approximately 490,000 contributions with 12 features
+(name,canidate,city,state,zip,employer,occupation,amount,date,receipt,lon,lat). The variables name, canidate, city state, employer, occupation are factors. 
+
+Other observations: 
+* cities with most contributors are leaning liberal
+* largest contributor occupation is not employed 
+* largest count of contributions are Bernie supporters
+* largest refund is more then alloted 10k 
+* biggest contributions is the upperbound of 10k
+
+
+## What is/are the main feature(s) of interest in your dataset? 
+
+the main features of the dataset are amount, city and occupation. I'd like to determine which features 
+are voting for each respected canidates the most and what is their median or max contributions for each canidate 
+as well as top locations. 
+
+
+## Did you create any new variables from existing variables in the dataset? 
+They only feature I truly changed within the data set is the datetime which I re translated it 
+to a more formal method so I may view it during my bivariate plot section. Other then that most variables were just re 
+written to express a more readable form. 
+
+
+## Of the features you investigated, were there any unusual distributions? Did you perform 
+any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this? 
+
+I log-transformed the right skewed of the amount and count of the contributions in the canidate. While the price still has a similar skewedness I wanted to to investigate a deeper understand of the dataset for which it gave me a clear picture and understand of how the data set functioned. Primarly, we can see within the amount that the Sander's group tends to contribute more in the below hundred dollar range while Trump's group tends to follow a higher contribution pattern. Most of the distrobutions had okay patterns. They only real unusual visualization I saw was employment being change by person in the largest contributions by occupation graph. 
+
+
+# Bivariate Plots Sections
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
+# select some variables that you want to use in your comparison
+merge_correlation_comparison <- subset(merge_bs_dt_df, selec = c(date, amount, canidate))
 
+#drop unused levels
+merge_correlation_comparison <- droplevels(merge_correlation_comparison)
 
-#hisogram
-theme_set(theme_bw())
-ggplot(refund_bsdf, aes(x=city, y=amount)) + 
-  geom_bar(stat="identity", width=.5, fill="tomato3") + 
-  labs(title="Ordered Bar Chart", 
-       subtitle="Amount vs. City", 
-       caption="source: gov") + 
-  theme(axis.text.x = element_text(angle=65, vjust=0.6))
-
-#boxplot
-ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_bsdf) +
-  geom_boxplot() + labs(title = "Ordered Box Plot", 
-                        subtitle = "Amount vs. City", 
-                        caption = "source: .gov") + 
-  scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10))
-
-#line graph
-ggplot(data = largest_cities_bsdf, aes(date, amount)) + 
-  geom_line(aes(color = city)) + 
-  labs(title = "Line Graph Bernie Sanders", 
-       subtitle = "Amount vs Date", 
-       caption = "source: .gov") 
-
+#brief overview of data
+summary(merge_correlation_comparison)
 
 #cross validation matrix 
-#set.seed(2000) # set the seed at #2000
-#bsdf_samp <- bsdf[sample(1:length(bsdf$amount), 1000), ]
-#bsdf_sampII <- subset(bsdf_samp, select  = c(city, amount))
-#ggpairs(bsdf_sampII, 
-        #lower = list(continuous = wrap("points", shape = I("."))), 
-        #upper = list(continuous = wrap("box", outlier.shape = I("."))))  
+set.seed(20022012) # set the seed 
+merge_samp <- merge_correlation_comparison[sample(1:length(merge_correlation_comparison$amount), 10000), ]
+
+#create plot of date, amount and canidate. 
+ggpairs(merge_samp, 
+        lower = list(continuous = wrap("points", shape = I("."))), 
+        upper = list(continuous = wrap("box", outlier.shape = I("."))), 
+        title = "Matrix plot of Date, Amount from Canidates.")
 
 
+```
+I created a subset of the data with amount, canidate and date. The problem I have in this datset is you don't have real numerical analysis
+but primarly location and amount contributions. But, you still can see interesting results in this matrix plot for instance, the canidates 
+by date you see some noramility in one of the canidates. Secondly, if you look at the date time between Jan and July you see a large growth in contributions, let's investigate this further.
 
-#bsdf_state_sample <- subset(bsdf, select = c(city, amount, name)) #subset the datqframe for bernie
-#bsdf_state_sample['region'] <- "california" #create a new column
-#levels(bsdf_state_sample$city) <- tolower(levels(bsdf_state_sample$city)) #make city all lower case
+```{r echo=FALSE, message=FALSE, warning = FALSE, bivariante_plots}
+#histogram, first set theme
 
-#bsdf_state_sample
-#str(ca_county)
-#ca_county_ss <- subset(ca_county, select = c(region,long,lat))
-#str(ca_county_ss)
+#set text size
+text_size <- element_text(size = 5)
 
-#set.seed(20000)
-#bsdf_state_sampleII <- bsdf_state_sample[sample(1:length(bsdf_state_sample$amount), 3000), ]
-#bsdf_state_sampleII = rename(bsdf_state_sampleII, city = "subregion")
-#test <- merge(ca_county,bsdf_state_sampleII, by = "subregion")
+#create histogram of canidates by date
+ggplot(merge_samp, aes(x = date, y = canidate, fill = canidate)) + 
+  geom_histogram(stat="identity", position = position_nudge()) + 
+ theme(axis.text.x = text_size) + 
+  scale_fill_manual(values=c("deepskyblue3", "firebrick3")) +   
+  xlab("Date") + ylab("Canidate") + # Set axis labels
+  ggtitle("Contributions by Date") +     # Set title
+  theme_bw()
 
 
-#bsdf_state_sampleIII <- subset(bsdf_state_sampleII, subregion == "ventura")
-#bsdf_state_sampleII
+```
+As the date moves into the election you see that donald Trump contributions are growning and Bernies are decreasing. 
+This is due to the fact that Donald Trump went on to become the Repulican party canidate and Bernie Sanders had to drop out of the 
+race. Let's look at this in a more normal distrubtion. 
+
+```{r echo=FALSE, message=FALSE, warning = FALSE, bivariante_plotsII}
+
+#create histogram of canidates by date but facet_wrap it in one column
+ggplot(merge_samp, aes(x = date, y = canidate, fill = canidate)) + 
+  geom_histogram(stat="identity") + 
+  theme(axis.text.x = text_size,
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) + 
+  scale_fill_manual(values=c("deepskyblue3", "firebrick3")) +   
+  ggtitle("Contributions by Date") +     # Set title
+   facet_wrap(~canidate, ncol = 1) 
+
+
+#create a by function of summary by date and canidate. 
+by(merge_samp$date, merge_samp$canidate, summary)
 ```
 
+Clearly we see that Sanders' campaign is increasing as the months go on peacking around the third or forth month of 2016. We don't see 
+large contributions in Donald Trump until the June mark. This could be due to teh fact that he was nominated aroudn this time or it's possible that California was still not interested in Donald Trump being the Republican canidate and still was hoping for a more moderate conservative like Jeb Bush or John Kasich. These plots do paint a very well detailed portrait of the canidates time running for president. 
 
-# Trump Dataset
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, line_graphs}
 
-#line graph
-ggplot(data = largest_cities_dtdf, aes(date, amount)) + 
-  geom_line(aes(color = city)) + 
-  labs(title = "Line Graph Donald Trump", 
+
+#line graph 
+ggplot(data = choose_city_df_sample, aes(date, amount, color = canidate)) + 
+  geom_line() + 
+  labs(titie = "Line Graph for Sanders V Trump", 
        subtitle = "Amount vs Date", 
-       caption = "source: .gov") 
+       caption = "source: .gov") + 
+  facet_wrap(~canidate, ncol = 1) + 
+  scale_color_manual(values=c("deepskyblue3", "firebrick3")) 
 
 
-#boxplot
-ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_dtdf) +
-  geom_boxplot() + labs(title = "Ordered Box Plot", 
-                        subtitle = "Amount vs. City", 
-                        caption = "source: .gov") + 
-  scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10))
+```
 
-#hisogram
+As you may view from above the trend of the line graph by date between Sanders and Trump. Some observations to view are Sander's data set is not a consistent as Trump's. Meaning, his data set tends to peak and fall between 
+high donations and refunds, while Trump's data set seems to look more uniform in nature. Could this have something to do with anixety in the election cylce? One observation to be noted is the negative amount in the y axis. Let's dive into this a bit closer.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, bar_graphs}
+#hisogram of refunds of bernie and trump
 theme_set(theme_bw())
-ggplot(refund_dtdf, aes(x=city, y=amount)) + 
-  geom_bar(stat="identity", width=.5, fill="tomato3") + 
+p1 <- ggplot(refund_bsdf, aes(x=city, y=amount)) + 
+      geom_bar(stat = "identity", width=.5, fill="deepskyblue3") + 
+      labs(title="Ordered Bar Chart of Refunds", 
+       subtitle="Bernie Sanders", 
+       caption="source: gov") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) 
+
+p2 <- ggplot(refund_dtdf, aes(x = city, y= amount)) + 
+  geom_bar(stat = "identity", width = .2, fill = "firebrick3") + 
+  labs(title="Ordered Bar Chart of Refunds", 
+       subtitle="Donald Trump", 
+       caption= "source:. gov") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) 
+
+#arrange the plots of historgrams of refunds
+grid.arrange(p1,p2,ncol = 2)
+
+#hisogram for both canidates.
+theme_set(theme_bw())
+ggplot(largest_amount_merge, aes(x=city, y=amount, color = canidate)) + 
+  geom_bar(stat="identity", width=.5, fill = "lavenderblush2") + 
   labs(title="Ordered Bar Chart", 
        subtitle="Amount vs. City", 
        caption="source: gov") + 
-  theme(axis.text.x = element_text(angle=65, vjust=0.6))
-
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  facet_wrap(~canidate) + 
+  scale_color_manual(values=c("deepskyblue3", "firebrick3")) 
 
 
 ```
+
+as you can see above most of the refund that were return were by Bernie Sanders campaigne. While some refunds were made by Donald Trump it seems that Bernie Sanders had the most. However, one thing to keep in mind is 
+that Bernie's dataset is larger so it could account for just more datapoints in the plot. if we look at amounts we can see that Bernie sanders has more contributions in the postive direction as well. Let's look at these in more depth statistically. 
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, box_plot}
+theme_set(theme_bw())
+p1 <- ggplot(refund_bsdf, aes(x=city, y=amount)) + 
+      geom_boxplot(width=.5, fill="deepskyblue3") + 
+      labs(title="Ordered boxplot of Refunds", 
+       subtitle="Bernie Sanders", 
+       caption="source: gov") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  scale_y_continuous(limits = c(-2000, 0))
+
+#drop levels. 
+bernie_city <- droplevels(refund_bsdf)
+#summary of Bernie refund by city
+by(bernie_city$amount, bernie_city$city, summary)
+
+p2 <- ggplot(refund_dtdf, aes(x = city, y= amount)) + 
+  geom_boxplot( width = .2, fill = "firebrick3") + 
+  labs(title="Ordered boxplot of Refunds", 
+       subtitle="Donald Trump", 
+       caption= "source:. gov") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  scale_y_continuous(limits = c(-4000, -2000))
+
+
+#drop levels.
+trump_city <- droplevels(refund_dtdf)
+#Sumary of Trump refunds by city
+by(trump_city$amount, trump_city$city, summary)
+
+#arrange the boxplots of refunds
+grid.arrange(p1,p2,ncol = 2)
+
+
+#drop levels 
+largest_amount_bernie_trump <- droplevels(largest_amount_merge)
+
+#summary of Trump, Bernie refunds by city
+by(largest_amount_bernie_trump$amount, largest_amount_bernie_trump$city, summary)
+
+# summary of box plot by canidate in major cities.
+#box plot of payments by canidate. 
+ggplot(aes(x = canidate, y = amount, fill = canidate), data = largest_amount_bernie_trump) +
+  geom_boxplot() + labs(title = "Ordered Box Plot", 
+                        subtitle = "Amount vs. City", 
+                        caption = "source: .gov") + 
+  scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10)) + 
+  scale_fill_manual(values=c("deepskyblue3", "firebrick3")) 
+
+#correlation teset
+#no real correlation between zip code and the amount people spend.
+cor.test(merge_bs_dt_df$zip,merge_bs_dt_df$amount, method = "pearson")
+
+```
+
+
+
+
+We can now see that most of the the regunds fall into a median point for Sanders less then negative five hundred dollars. While, the Trump team seems to have small strips. If we view the postive amount, meaning the contributions, 
+we see that by city the median rate is in twenty-seven mark for Bernie Sanders (which was a campaign footnote) while Trump's falls in the forty-nine to fifty range. 
+
+# Bivariate Analysis 
+
+## Talk aboust some of the relationships you oberseved in this part of the investiations. 
+How did the features of interest vary with other features in the dataset. 
+
+the only true correlation I could do on this dataset was amount and zip_code using pearson 
+and it found no real true correlation (something closer to zero) or around twenty percent negative correlation. Which means it the price of contributions is pretty all across the board in each zip code. I must stress again that the datasets that were both gathered on the government website are skewed in size, Bernie's being higher, but taking that into account there is a strong notion that Bernie's footnote campaign talk about the average american spending roughly twenty-seven dollars in this contributions seems to be right on the money. However, Sanders did not explain the large amount of refends he was getting from contributors. Trump's, while low, seems to follow a normal uniform pattern in campaign contributions which just shows he's steadly reaching the finish line. 
+
+## Did you obesrve any interesting relationships between teh other features? 
+
+There isn't really any true relationship across the board in this dataset it really just outlines that the Sanders campaign had many contributors who seemed to be up and down along the campaign while Trump's supports were steady and consistent. 
+
+
+## What is the strongest data point you found? 
+the strongerst thing I found was Bernie Sanders footnote of twenty-seven dollars. I though that was pretty wonderful. 
+
+
+
+
+# Multivariate Plots Section and Final Plots
+
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 #box plot of payments by canidate. 
@@ -422,15 +589,6 @@ ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_merge) +
   facet_wrap(~canidate) 
 
 
-#hisogram for both canidates.
-theme_set(theme_bw())
-ggplot(largest_amount_merge, aes(x=city, y=amount)) + 
-  geom_bar(stat="identity", width=.5, fill="tomato3") + 
-  labs(title="Ordered Bar Chart", 
-       subtitle="Amount vs. City", 
-       caption="source: gov") + 
-  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
-  facet_wrap(~canidate)
 
 
 #create map for bernie v trump of contributors. 
@@ -444,4 +602,17 @@ ggplot(data = ca_county, aes(x = long, y = lat, group = group)) +
        subtitle = "Trump (red) v. Bernie (blue)", 
        caption= "source: .gov")  + 
        coord_map() 
+
+
+
+# heat map for trump and bernie.
+set.seed(234190) #set seed
+cdf <- merge_bs_dt_df[order(merge_bs_dt_df$canidate), ] #order the dataframe by canidate
+cdf <- cdf[sample(1:length(cdf$amount), 50), ] #create a sample of 50 poeple in dataset
+cdf <- subset(cdf, select = c("name","canidate","city","zip","employer", 
+                              "occupation", "amount","date","lon","lat")) #choose particular columns
+row.names(cdf) <- cdf$name #make row into names
+cdf_matrix <- data.matrix(cdf) #create the data into a matrix of numberes
+cdf_heatmap <- heatmap(cdf_matrix, Rowv=NA, Colv=NA, col = colorRampPalette(c("blue", "red"))(100), scale = "column", margins = c(5,10)) # make heatmap
+
 ```
