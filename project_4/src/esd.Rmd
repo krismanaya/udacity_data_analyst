@@ -2,7 +2,9 @@
 title: "Bernie Sanders & Donald J. Trump Contributions."
 author: "Kris Anaya"
 date: "5/22/2017"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, load_packages}
@@ -253,6 +255,8 @@ qplot(x = amount, data = not_employed_df, color = I("black"), fill=  I('#F79420'
 #create a summary of amount by state
 by(not_employed_df$amount, not_employed_df$state, summary)
 ```
+
+
 If we consider the unemployment between two canidates it would seem that mister Sanders has the largest. Most poeple who are unemployed 
 fall into the zero to hundred dollar amount while we see a converging pattern as the amount increases. Within the summary we see that 
 the median is exactly twenty-seven dollars the same amount which Mr. Sanders proclaimed in his campaign speeches. 
@@ -387,6 +391,8 @@ ggpairs(merge_samp,
 
 
 ```
+
+
 I created a subset of the data with amount, canidate and date. The problem I have in this datset is you don't have real numerical analysis
 but primarly location and amount contributions. But, you still can see interesting results in this matrix plot for instance, the canidates 
 by date you see some noramility in one of the canidates. Secondly, if you look at the date time between Jan and July you see a large growth in contributions, let's investigate this further.
@@ -408,6 +414,8 @@ ggplot(merge_samp, aes(x = date, y = canidate, fill = canidate)) +
 
 
 ```
+
+
 As the date moves into the election you see that donald Trump contributions are growning and Bernies are decreasing. 
 This is due to the fact that Donald Trump went on to become the Repulican party canidate and Bernie Sanders had to drop out of the 
 race. Let's look at this in a more normal distrubtion. 
@@ -448,6 +456,7 @@ ggplot(data = choose_city_df_sample, aes(date, amount, color = canidate)) +
 
 ```
 
+
 As you may view from above the trend of the line graph by date between Sanders and Trump. Some observations to view are Sander's data set is not a consistent as Trump's. Meaning, his data set tends to peak and fall between 
 high donations and refunds, while Trump's data set seems to look more uniform in nature. Could this have something to do with anixety in the election cylce? One observation to be noted is the negative amount in the y axis. Let's dive into this a bit closer.
 
@@ -485,12 +494,13 @@ ggplot(largest_amount_merge, aes(x=city, y=amount, color = canidate)) +
 
 ```
 
+
 as you can see above most of the refund that were return were by Bernie Sanders campaigne. While some refunds were made by Donald Trump it seems that Bernie Sanders had the most. However, one thing to keep in mind is 
 that Bernie's dataset is larger so it could account for just more datapoints in the plot. if we look at amounts we can see that Bernie sanders has more contributions in the postive direction as well. Let's look at these in more depth statistically. 
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, box_plot}
-theme_set(theme_bw())
+
 p1 <- ggplot(refund_bsdf, aes(x=city, y=amount)) + 
       geom_boxplot(width=.5, fill="deepskyblue3") + 
       labs(title="Ordered boxplot of Refunds", 
@@ -568,40 +578,64 @@ the strongerst thing I found was Bernie Sanders footnote of twenty-seven dollars
 
 
 
-# Multivariate Plots Section and Final Plots
+# Multivariate Plots Section and Summary
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, line_box_graphs}
 
-#box plot of payments by canidate. 
-ggplot(aes(x = canidate, y = amount, fill = canidate), data = merge_bs_dt_df_subset) +
-  geom_boxplot() + labs(title = "Ordered Box Plot", 
-                        subtitle = "Amount vs. City", 
-                        caption = "source: .gov") + 
-  scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10))  
+#geom line plot by state and facet_wrap by canidate. 
+ggplot(data = choose_city_df_sample, aes(date, amount)) + 
+  geom_line(aes(color = city), stat = "identity") + 
+  labs(titie = "Line Graph for Sanders V Trump", 
+       subtitle = "Amount vs Date", 
+       caption = "source: .gov") + 
+  facet_wrap(~canidate, ncol = 1) +   
+  scale_color_brewer(type = "div", palette = "RdBu", guide = guide_legend(title = "Color", reverse = F, override.aes = list(alpha = 1, size = 2))) + 
+  theme(panel.background = element_rect(fill = "gray49", colour = 'gray8'), 
+        panel.grid.major.x = element_line(size = .1, color = "gray 8"), 
+        panel.grid.major.y = element_line(size = .1, color = "gray 8")) + 
+  scale_y_continuous(limits = c(-5000, 5000))
 
+
+
+text_size <- element_text(size = 3) #set textsize
 #box plot for both canidates. 
-ggplot(aes(x = city, y = amount, fill = city), data = largest_amount_merge) +
-  geom_boxplot() + labs(title = "Ordered Box Plot", 
+ggplot(aes(x = city, y = amount), data = largest_amount_merge) +
+  geom_boxplot(aes(fill=city)) + labs(title = "Ordered Box Plot", 
                         subtitle = "Amount vs. City", 
                         caption = "source: .gov") + 
+  scale_fill_brewer(type = "summary", palette = "RdBu",
+                     guide = guide_legend(title = "City")) + 
+  theme(panel.background = element_rect(fill = "gray49"), 
+        panel.grid.major.x = element_line(size = .1, color = "gray 8"), 
+        panel.grid.major.y = element_line(size = .1, color = "gray 8"),
+        axis.text.x = text_size) + 
   scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10)) + 
-  facet_wrap(~canidate) 
+  facet_wrap(~canidate)  
 
 
+```
 
 
+These last two plots show the relationship that the canidates have by major cities of the date of time and the amount that is spent. As you can see 
+clearly Sanders contributions in these states are more sporatic as the months go on while Trump's tend to fall in a more uniform pattern (this is not to say that this is either good or bad).
+While, in the box plot we see are clearer picture of amounts recived where Sanders falls into the median range of around $27 dollars while trumps median range per city now seems to have more sporatic scaling. 
+I personally believe the box plot shows a clear image of what's going on in these cities. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, map_heat}
 #create map for bernie v trump of contributors. 
-head(ca_county)
-ggplot(data = ca_county, aes(x = long, y = lat, group = group)) + 
-  geom_polygon(fill = I("linen")) + 
+#head(ca_county) #check the county dataset
+ggplot(data = ca_county, aes(x = long, y = lat, group = group)) + #chgoose ca_county dataset 
+  geom_polygon(fill = I("linen")) + # fill will smooth color
   geom_path(aes(color = subregion), linestyle = 1) +
-  geom_jitter(data = sample_bernie, aes(x =lon, y = lat, group= NULL), color = "blue", alpha = 1) + 
-  geom_jitter(data = sample_trump, aes(x = lon, y = lat, group = NULL), color = "red", alpha = 0.3) + 
+  geom_jitter(data = sample_bernie, aes(x =lon, y = lat, group= NULL), color = "blue", alpha = 1) +  #choose bernie dataset 
+  geom_jitter(data = sample_trump, aes(x = lon, y = lat, group = NULL), color = "red", alpha = 0.3) + #choose trump dataset
   labs(title = "Map of contributors", 
        subtitle = "Trump (red) v. Bernie (blue)", 
        caption= "source: .gov")  + 
-       coord_map() 
+       coord_map()  +  theme(panel.background = element_rect(fill = "gray49"), 
+        panel.grid.major.x = element_line(size = .1, color = "gray 8"), 
+        panel.grid.major.y = element_line(size = .1, color = "gray 8")) 
 
 
 
@@ -613,6 +647,99 @@ cdf <- subset(cdf, select = c("name","canidate","city","zip","employer",
                               "occupation", "amount","date","lon","lat")) #choose particular columns
 row.names(cdf) <- cdf$name #make row into names
 cdf_matrix <- data.matrix(cdf) #create the data into a matrix of numberes
-cdf_heatmap <- heatmap(cdf_matrix, Rowv=NA, Colv=NA, col = colorRampPalette(c("blue", "red"))(100), scale = "column", margins = c(5,10)) # make heatmap
-
+cdf_heatmap <- heatmap(cdf_matrix, Rowv=NA, Colv=NA, col = colorRampPalette(c("blue", "red"))(100), scale = "column", margins = c(5,10))  # make heatmap
 ```
+
+
+These last two graphs show the overall range of were people are contribution. As you have noticed in the map you see a lot of red within the San Diego region and more across the ocean. However, these regions 
+to have some dots for Bernie. Purple represents counties and cities where you have equal amounts of of contributions. However, this is more indepth with a sample size of 50 contributors with the heat map. 
+Within the heat map you see most of the areas are converging to purple with some leaning blue and other leaning more red. This gives us a good representation how the overall distrubtion of how voters were contributing in California. 
+
+
+# Multivariate Analysis
+
+## Were there features that strengthened each other in terms of looking at your features of interest. 
+
+Essentially, what the multivariable analysis taugh me is there really isn't a left leaning or right leaning contribution within these two data sets. Primarily, most of the contributions seem to be equal in strenght. While, Bernie's dataset is larger then Trump's the conserable spread across the state between Democractic or Republican seems to be pretty equal here and has no direct correlation between on another. 
+
+## Were there any interesting or surprising interactions between features? 
+
+I think the most suprising thing is that it's NOT more blue in the data sets and it's roughly spread fairly equally. I would of thought more people to support Bernie Sanders way more then Donald Trump and while they did support Sanders more I thought it would be more extreme. 
+
+
+
+# Final Plots and Summary 
+
+## Plot One
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, log_plot_final}
+qplot(x = amount, data = merge_bs_dt_df_subset, color = I("black"), fill = canidate) + 
+  labs(title = "Bernie v Trump Contributions Base 10",
+       subtitle = "Count vs. Amount", 
+       caption = ".gov") + 
+    scale_fill_manual(values=c("deepskyblue3", "firebrick3")) + 
+  facet_wrap(~canidate) +
+  scale_x_continuous(limits = c(0,1000), breaks = seq(0,2000,100)) +
+  coord_trans(y ="sqrt") + 
+  scale_y_log10() 
+```
+
+## Description One 
+The distribtuion of amount by count is on a log scale and is still skewed. However, this does give us a first impression 
+of equal distribtuion between Sanders and Trump. Sanders, falling higher in scale below the <100 mark and Trump falling higher 
+in the =800 mark. 
+
+
+## Plot two
+```{r echo=FALSE, message=FALSE, warning=FALSE, box_plot_final}
+#box plot for both canidates. 
+ggplot(aes(x = city, y = amount), data = largest_amount_merge) +
+  geom_boxplot(aes(fill=city)) + labs(title = "Ordered Box Plot", 
+                        subtitle = "Amount vs. City", 
+                        caption = "source: .gov") + 
+  scale_fill_brewer(type = "summary", palette = "RdBu",
+                     guide = guide_legend(title = "City")) + 
+  theme(panel.background = element_rect(fill = "gray49"), 
+        panel.grid.major.x = element_line(size = .1, color = "gray 8"), 
+        panel.grid.major.y = element_line(size = .1, color = "gray 8"),
+        axis.text.x = text_size) + 
+  scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10)) + 
+  facet_wrap(~canidate)  
+```
+
+
+## Description two
+
+This plot indicates how major cities contributed to the campaign. As you can see sanders has a median of roughly 27 dollars while Trump hwas a median around 50 dollars depending on the city. This shows a more uniform steady contribution for the sanders campaign while Trump's is more all over the place. However, it looks to me like larger contributions were made for trump within the third quartile, while Sanders has heavier outliers. 
+
+
+## Plot three 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, heat_map_final}
+# heat map for trump and bernie.
+set.seed(234190) #set seed
+cdf <- merge_bs_dt_df[order(merge_bs_dt_df$canidate), ] #order the dataframe by canidate
+cdf <- cdf[sample(1:length(cdf$amount), 50), ] #create a sample of 50 poeple in dataset
+cdf <- subset(cdf, select = c("name","canidate","city","zip","employer", 
+                              "occupation", "amount","date","lon","lat")) #choose particular columns
+row.names(cdf) <- cdf$name #make row into names
+cdf_matrix <- data.matrix(cdf) #create the data into a matrix of numberes
+cdf_heatmap <- heatmap(cdf_matrix, Rowv=NA, Colv=NA, col = colorRampPalette(c("blue", "red"))(100), scale = "column", margins = c(5,10))  # make heatmap
+```
+
+## Description three 
+
+This heat map shows a sample of 50 contributors for Bernie and Trujmp which shows a realtive equal pattern between contributions. While some are more left leaning and dmore right a majority fall into the purple category. 
+
+# Reflection 
+
+This report explores a dataset containing canidates and attributes for approximately 490,000 contributions in California during the 2016 election for President of the United States. Most of the explination within the data set was done with amount, date, canidate, occupation, name and location. I wanted to explore if certain regions were more impacted by Sander's campaign or Trump's campaign. And my conclusion would be that, yes, there were more contributions made with the Sanders campaign, However, I was surprised to see that there were still contributions made for the Trump campaign as well. 
+
+When I explored the data set the first thing that suprised me was the amoutn of refunds that were carried about by the Sander's campaign, one of the largest be -10,500 dollars. While I know there are alot of rules pertaining to campaign contributions I wonder if it was a true rerfund or something that wasn't done properly based on California contribtuion rules. 
+
+Sander's campaign median level of donation fell around the 27 dollar mark, while Donald Trump's campaign fell around the 50 dollar mark. I was pleased to see that Sanders was correct in using his footnote for his speeches. The thing that struck me the most about these contributions is that a large majority were done by peopel who were unemployed, which makes me quesetion, do people get more involved in elecion cycles when they are unemployed? Do poeple tend to not care about contributions when they are in fact employed? Does the upper middle class seem to not care about elections because they are comfortable with their stage in life? It's an interesting analysis to appraoch. 
+
+Finally, I believe doing an analysis of a more red state and comparing Sander's to Trump would be interesting, or a swing state. However, I choose this state because it is in fact where I live. 
+
+
+
