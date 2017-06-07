@@ -3,8 +3,8 @@ title: "Bernie Sanders & Donald J. Trump Contributions."
 author: "Kris Anaya"
 date: "5/22/2017"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, load_packages}
@@ -154,15 +154,23 @@ This report explores a dataset containing canidates and attributes for approxima
 
 # Univariate Plot Section 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, univariate_plot}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, univariate_plot_1}
+
+#summary 
+str(merge_bs_dt_df) #observe merge data
+
+summary(merge_bs_dt_df) #view summary of data
+```
+Within the summary you can see that largest city of contributors is Los Angeles. An overwhelming amount are Not Empoyed and most people made contributions around April of 2016. There are some strange things to poitn out like the minimum amount is listed as -10,500 dollars. This took me awhile to understand and with a little more investigating you can see in the receipt section there is a section called refunds were contributors may refund based on legalities of contributions in the state of california. 
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, univariate_plot_2}
 
 
 
 ################################################# Amount ###################################################
 
-str(merge_bs_dt_df) #observe merge data
-
-summary(merge_bs_dt_df) #view summary of data
 
 # create histogram of count vs amount facet_wrap by canidates. 
 qplot(x = amount, data = merge_bs_dt_df_subset, color = I("black"), fill = I("firebrick4")) + 
@@ -174,7 +182,8 @@ qplot(x = amount, data = merge_bs_dt_df_subset, color = I("black"), fill = I("fi
   scale_y_continuous(limits = c(0,10000), breaks = seq(0,10000,1000)) 
 
 #take the sqrt and then scale it by base 10.
-qplot(x = amount, data = merge_bs_dt_df_subset, color = I("black"), fill = I("firebrick4")) + 
+ggplot(aes(x = amount, color = I("black"), fill = I("firebrick4")), data = merge_bs_dt_df_subset) + 
+  geom_histogram(boundary = 0) + 
   labs(title = "Bernie v Trump Contributions Base 10",
        subtitle = "Count vs. Amount", 
        caption = ".gov") + 
@@ -184,15 +193,16 @@ qplot(x = amount, data = merge_bs_dt_df_subset, color = I("black"), fill = I("fi
   scale_y_log10() 
 ```
 
+
 Transformed both long tail-esque data to better understand the distribution of amount by each canidate. The transformed amount appears realtively similary with both canidates. Although, 
-Sanders has a bit more contributiosn that are less then the fifty-dollar range peaking above 10 thousand, while Trump appears to have a larger count of amount around the nine-hundred dollar range. Let's investigate 
+Sanders has a bit more contributions that are less then the fifty-dollar range peaking above 10 thousand, while Trump appears to have a larger count of amount around the nine-hundred dollar range. Let's investigate 
 some other variables like cities, Occupation and name.  
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, univariate_plot_partII}
 
 
 ################################################## Cities ################################################
-city_text <- element_text(size = 3) #change x.axis text 
+city_text <- element_text(size = 10) #change x.axis text 
 # creat a subset of merge_bs_dt_df with largest mentropolitan cities and plot them using qplot function. 
 choose_city_df_sample <- subset(merge_bs_dt_df, merge_bs_dt_df$city %in% c("BAKERSFIELD", "SAN JOSE", "SAN FRANCISCO", "BERKELEY", "LOS ANGELES",
                                                                            "SACRAMENTO","SAN DIEGO", "OAKLAND", "HUNTINGTON BEACH"))
@@ -201,10 +211,11 @@ qplot(x = city, data = choose_city_df_sample, color = I("black"), fill = I("pale
        subtitle = "Count vs. City", 
        caption = ".gov") + 
   theme(axis.text.x = city_text) + 
-  facet_wrap(~canidate) 
+  facet_wrap(~canidate) + 
+  coord_flip()
 
 ###################################################### Occupation #############################################
-occupation_text <- element_text(size = 4) #change x.axis text
+occupation_text <- element_text(size = 10) #change x.axis text
 # create a subset of merge_bs_dt_df with largest occupations in data set and plot. 
 choose_occupation_df_sample <- subset(merge_bs_dt_df, merge_bs_dt_df$occupation %in% c("NOT EMPLOYED", "RETIRED", "INFORMATION REQUESTED", 
                                                                                        "TEACHER", "ENGINEER"))
@@ -214,12 +225,13 @@ qplot(x = occupation, data = choose_occupation_df_sample, color = I("black"), fi
        subtitle = "Count vs. Occupation", 
        caption = ".gov") + 
   theme(axis.text.x = occupation_text) + 
-  facet_wrap(~canidate)
+  facet_wrap(~canidate) + 
+  coord_flip()
 
 
 
 ############################################# Name #############################################
-name_text <- element_text(size = 5) #change x.axis text
+name_text <- element_text(size = 10) #change x.axis text
 #create a subset of merge_bs_dt_df with most contributed by name and plot.  
 choose_name_df_sample <- subset(merge_bs_dt_df, merge_bs_dt_df$name %in% c("WEIL, MONIQUE", "MCLENNAN, MARLYN", "AUSLENDER, LEONARD", "ISERI, MARTIN", 
                                                                             "SPEAR, JOSEPH", "DAVIDSON, LISA", "(Other)"))
@@ -229,7 +241,8 @@ qplot(x = name, data = choose_name_df_sample, color = I("black"), fill = I("orch
        subtitle = "Count vs. Name", 
        caption = ".gov") + 
   theme(axis.text.x = occupation_text) + 
-  facet_wrap(~canidate)
+  facet_wrap(~canidate) + 
+  coord_flip() #flip coordinates for better read.
 ```
 
 Most Major cities contributed to Bernie's campaign, with pretty smiliary contributions in Bakersfield and Hunnigton Beach. A majority of occuptations that contributed to Bernie's campaign are "Not Employed", 
@@ -243,7 +256,8 @@ were made with the Trump campaign in California.
 not_employed_df <- subset(merge_bs_dt_df, occupation == "NOT EMPLOYED")
 
 #create plot of amount by unemployment
-qplot(x = amount, data = not_employed_df, color = I("black"), fill=  I('#F79420')) +
+ggplot(aes(x = amount, color = I("black"), fill=  I('#F79420')), data = not_employed_df) +
+  geom_histogram(boundary = 0) + #force bondary. 
   labs(title = "Bernie V Trump Contributions", 
        subtitle = "Count vs. Name", 
        caption = ".gov") +
@@ -268,35 +282,46 @@ the median is exactly twenty-seven dollars the same amount which Mr. Sanders pro
 largest_cont_df <- subset(merge_bs_dt_df, merge_bs_dt_df$name %in% c("WEIL, MONIQUE", "MCLENNAN, MARLYN", "AUSLENDER, LEONARD", "ISERI, MARTIN", 
                                                                             "SPEAR, JOSEPH", "DAVIDSON, LISA")) 
 
+
+
+
 #create regular qplot based on amount
-qplot(x = amount, data = largest_cont_df) + 
-  labs(title = "Largest Contributors")
+ggplot(aes(x = amount), data = largest_cont_df)  + 
+  geom_histogram(boundary = 0) + 
+  labs(title = "Largest COntributors")
 
 
 #create limits of plot based on amount 
-qplot(x = amount, data = largest_cont_df) + 
+ggplot(aes(x = amount), data = largest_cont_df) + 
+  geom_histogram(boundary = 0) + 
   labs(title = "Largest Contributors") + 
   scale_x_continuous(limits = c(0,500)) + 
   scale_y_continuous(limits = c(0,300))
 
 
 #remove outliers
-qplot(x = amount, data = largest_cont_df) + 
+ggplot(aes(x = amount), data = largest_cont_df) + 
+  geom_histogram(boundary = 0) +
   labs(title = "Largest Contributors") + 
   scale_x_continuous(limits = c(0,150)) + 
   scale_y_continuous(limits = c(0,290))
 
+#notcied boundary error
+summary(largest_cont_df$amount)
+summary(largest_cont_df$amount >= 0 & largest_cont_df$amount <30)
 
 #skew tail then take a logtransform 
-qplot(x = amount, data = largest_cont_df) + 
-  labs(title = "Largest Contributors") + 
+ggplot(largest_cont_df, aes(x = amount)) +
+  geom_histogram(boundary = 0) +
+labs(title = "Largest Contributors") + 
   scale_x_continuous(limits = c(0,150)) + 
   scale_y_continuous(limits = c(0,290)) + 
   scale_y_log10()
   
 
 #color plot 
-qplot(x = amount, data = largest_cont_df, color = I("black"), fill = I('#099DD9')) + 
+ggplot(aes(x = amount, color = I("black"), fill = I('#099DD9')), data = largest_cont_df) + 
+  geom_histogram(boundary = 0 ) + 
   labs(title = "Bernie V Trump Contributions", 
        subtitle = "Largest Contributors by Amount", 
        caption = ".gov") +
@@ -307,7 +332,8 @@ qplot(x = amount, data = largest_cont_df, color = I("black"), fill = I('#099DD9'
 
 ```
 
-I wanted to do a step by step approach of the dataset of the names who contributed the most. All of these names contributed to the Bernie Sanders campaign as was visualized above. When we zoom in and look closer at the data 
+
+I wanted to do a step by step approach of the dataset of the names who contributed the most. Within the first three plots I had noticed an error by checking the data set within it's quantiles. It was brought to my attention in the third plot that 1200 observations between 0 and 30 are not identified in the first three plots. This can always be promblematic in dealing with data sets. Fortunately, I was able to remedy the problem by moving the boundary line back to zero and rescaling the data set to show a more accurate description of the original plot. All of these names contributed to the Bernie Sanders campaign as was visualized above. When we zoom in and look closer at the data 
 and seperate the names in each column while taking a log transformation of the slightly skewed chart we can get a very clear visualization of how the contributors spread out there payments. I didn't want to get into the refund payments just yet in the data set because it requires multiple variables to investigate further, but as you can see from the chart above most of the contributions to the Sanders Campaign were paid around a wide variety of ranges.
 
 
@@ -315,7 +341,7 @@ and seperate the names in each column while taking a log transformation of the s
 str(merge_bs_dt_df)
 summary(merge_bs_dt_df)
 #change text size
-occupation_text <- element_text(size = 5) #change x.axis text
+occupation_text <- element_text(size = 8) #change x.axis text
 
 #create a plot of occupation from largest contributors
 qplot(x = occupation, data = largest_cont_df, color = I("black"), fill = I("#099DD9")) + 
@@ -323,7 +349,8 @@ qplot(x = occupation, data = largest_cont_df, color = I("black"), fill = I("#099
        subtitle = "Largest Contributors by Occupation", 
        caption = ".gov") +
   theme(axis.text.x = occupation_text) + 
-  facet_wrap(~name)
+  facet_wrap(~name) + 
+  coord_flip()
 #largest amounts across the board from the names dataframe
 summary(largest_cont_df$amount)
 
@@ -404,10 +431,10 @@ by date you see some noramility in one of the canidates. Secondly, if you look a
 text_size <- element_text(size = 5)
 
 #create histogram of canidates by date
-ggplot(merge_samp, aes(x = date, y = canidate, fill = canidate)) + 
-  geom_histogram(stat="identity", position = position_nudge()) + 
+ggplot(merge_samp, aes(x = date, y = amount)) + 
+  geom_line(aes(color= canidate), stat="identity", position = position_nudge()) + 
  theme(axis.text.x = text_size) + 
-  scale_fill_manual(values=c("deepskyblue3", "firebrick3")) +   
+  scale_color_manual(values=c("deepskyblue3", "firebrick3")) +   
   xlab("Date") + ylab("Canidate") + # Set axis labels
   ggtitle("Contributions by Date") +     # Set title
   theme_bw()
@@ -598,7 +625,7 @@ ggplot(data = choose_city_df_sample, aes(date, amount)) +
 
 
 
-text_size <- element_text(size = 3) #set textsize
+text_size <- element_text(size = 3.5) #set textsize
 #box plot for both canidates. 
 ggplot(aes(x = city, y = amount), data = largest_amount_merge) +
   geom_boxplot(aes(fill=city)) + labs(title = "Ordered Box Plot", 
@@ -611,7 +638,8 @@ ggplot(aes(x = city, y = amount), data = largest_amount_merge) +
         panel.grid.major.y = element_line(size = .1, color = "gray 8"),
         axis.text.x = text_size) + 
   scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10)) + 
-  facet_wrap(~canidate)  
+  facet_wrap(~canidate)  + 
+  coord_flip()
 
 
 ```
@@ -673,7 +701,8 @@ I think the most suprising thing is that it's NOT more blue in the data sets and
 ## Plot One
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, log_plot_final}
-qplot(x = amount, data = merge_bs_dt_df_subset, color = I("black"), fill = canidate) + 
+ggplot(aes(x = amount,color = I("black"), fill = canidate), data = merge_bs_dt_df_subset) + 
+  geom_histogram(boundary = 0) + 
   labs(title = "Bernie v Trump Contributions Base 10",
        subtitle = "Count vs. Amount", 
        caption = ".gov") + 
@@ -704,7 +733,8 @@ ggplot(aes(x = city, y = amount), data = largest_amount_merge) +
         panel.grid.major.y = element_line(size = .1, color = "gray 8"),
         axis.text.x = text_size) + 
   scale_y_continuous(limits = c(0,200), breaks = seq(0,200,10)) + 
-  facet_wrap(~canidate)  
+  facet_wrap(~canidate) + 
+  coord_flip() 
 ```
 
 
