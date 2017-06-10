@@ -47,7 +47,8 @@ colnames(bsdf) <- c("cmte_id", "cand_it", "canidate", "name",
 
 bsdf  = bsdf[-1,] #drop first row in dataset
 
-myvars <- c("name","canidate","city","state","zip","employer","occupation","amount","date","receipt") #create data columns
+myvars <- c("name","canidate","city","state","zip",
+            "employer","occupation","amount","date","receipt") #create data columns
 
 bsdf <- bsdf[myvars] #pick columns I need. 
 
@@ -61,11 +62,14 @@ bsdf$date <- as.POSIXlt(bsdf$date)
 
 dtdf <- read.csv("P80001571-CA.csv", sep = ",", header = FALSE)
 
-colnames(dtdf) <- c("cmte_id", "cand_id", "canidate", "name","city", "state", "zip", "employer", "occupation", "amount", "date","receipt", "memo","memo_text", "form_tp", "file_number","tran_id", "election_tp") # rename columns 
+colnames(dtdf) <- c("cmte_id", "cand_id", "canidate", "name","city", "state", "zip", "employer", 
+                    "occupation", "amount", "date","receipt", "memo",
+                    "memo_text", "form_tp", "file_number","tran_id", "election_tp") # rename columns 
 
 
 dtdf = dtdf[-1,] #drop first row
-myvars <- c("name","canidate","city","state","zip","employer","occupation","amount","date","receipt") #create data columns
+myvars <- c("name","canidate","city","state","zip",
+            "employer","occupation","amount","date","receipt") #create data columns
 dtdf <- dtdf[myvars] #choose columns i'm interested in.
 
 dtdf$amount <- as.numeric(as.character(dtdf$amount)) #change amount to numeric
@@ -90,8 +94,10 @@ ca_county <-subset(counties, region == "california")
 geoloc <- read.csv('California_geoLocation_new.csv', row.names=NULL) #load dataset
 
 nm <- c("lon", "lat") #add lat long 
-bsdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(bsdf$city), as.character(geoloc$city))]) #create loc dataset for bernie
-dtdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(dtdf$city), as.character(geoloc$city))]) #apply it to trump dataset 
+bsdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(bsdf$city), 
+                                                     as.character(geoloc$city))]) #create loc dataset for bernie
+dtdf[nm] <- lapply(nm, function(x) geoloc[[x]][match(as.character(dtdf$city), 
+                                                     as.character(geoloc$city))]) #apply it to trump dataset 
 
 
 
@@ -118,7 +124,8 @@ largest_amount_bsdf <- subset(largest_cities_bsdf, amount > 0) #no refunds in da
 set.seed(20000)
 sample_trump <- bsdf[sample(1:length(dtdf$amount), 3000), ] #sample dataset for trump
 
-largest_cities_dtdf <- subset(dtdf, city == c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH")) #sanders contributions in bigger cities
+largest_cities_dtdf <- subset(dtdf, city == c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES",
+                                              "SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH")) #sanders contributions in bigger cities
 
 refund_dtdf <- subset(dtdf, receipt == "Refund" & city ==  c("BAKERSFIELD", "SAN JOSE", "LOS ANGELES","SACRAMENTO","SAN DIEGO", "HUNTINGTON BEACH",
                                                          "OAKLAND", "BERKELEY", "SAN FRANCISCO"))   # largest cities who obtained a refund.
@@ -204,7 +211,8 @@ some other variables like cities, Occupation and name.
 ################################################## Cities ################################################
 city_text <- element_text(size = 10) #change x.axis text 
 # creat a subset of merge_bs_dt_df with largest mentropolitan cities and plot them using qplot function. 
-choose_city_df_sample <- subset(merge_bs_dt_df, merge_bs_dt_df$city %in% c("BAKERSFIELD", "SAN JOSE", "SAN FRANCISCO", "BERKELEY", "LOS ANGELES",
+choose_city_df_sample <- subset(merge_bs_dt_df, 
+                                merge_bs_dt_df$city %in% c("BAKERSFIELD", "SAN JOSE", "SAN FRANCISCO", "BERKELEY", "LOS ANGELES",
                                                                            "SACRAMENTO","SAN DIEGO", "OAKLAND", "HUNTINGTON BEACH"))
 qplot(x = city, data = choose_city_df_sample, color = I("black"), fill = I("paleturquoise1")) + 
   labs(title = "Bernie v Trump Contributions",
@@ -217,7 +225,8 @@ qplot(x = city, data = choose_city_df_sample, color = I("black"), fill = I("pale
 ###################################################### Occupation #############################################
 occupation_text <- element_text(size = 10) #change x.axis text
 # create a subset of merge_bs_dt_df with largest occupations in data set and plot. 
-choose_occupation_df_sample <- subset(merge_bs_dt_df, merge_bs_dt_df$occupation %in% c("NOT EMPLOYED", "RETIRED", "INFORMATION REQUESTED", 
+choose_occupation_df_sample <- subset(merge_bs_dt_df, 
+                                      merge_bs_dt_df$occupation %in% c("NOT EMPLOYED", "RETIRED", "INFORMATION REQUESTED", 
                                                                                        "TEACHER", "ENGINEER"))
 
 qplot(x = occupation, data = choose_occupation_df_sample, color = I("black"), fill = I("pink3")) + 
@@ -233,7 +242,8 @@ qplot(x = occupation, data = choose_occupation_df_sample, color = I("black"), fi
 ############################################# Name #############################################
 name_text <- element_text(size = 10) #change x.axis text
 #create a subset of merge_bs_dt_df with most contributed by name and plot.  
-choose_name_df_sample <- subset(merge_bs_dt_df, merge_bs_dt_df$name %in% c("WEIL, MONIQUE", "MCLENNAN, MARLYN", "AUSLENDER, LEONARD", "ISERI, MARTIN", 
+choose_name_df_sample <- subset(merge_bs_dt_df, 
+                                merge_bs_dt_df$name %in% c("WEIL, MONIQUE", "MCLENNAN, MARLYN", "AUSLENDER, LEONARD", "ISERI, MARTIN", 
                                                                             "SPEAR, JOSEPH", "DAVIDSON, LISA", "(Other)"))
 
 qplot(x = name, data = choose_name_df_sample, color = I("black"), fill = I("orchid2")) + 
@@ -279,11 +289,9 @@ the median is exactly twenty-seven dollars the same amount which Mr. Sanders pro
 ```{r echo=FALSE, message=FALSE, warning=FALSE, largest_contributors}
 
 #subset datafram based on name
-largest_cont_df <- subset(merge_bs_dt_df, merge_bs_dt_df$name %in% c("WEIL, MONIQUE", "MCLENNAN, MARLYN", "AUSLENDER, LEONARD", "ISERI, MARTIN", 
+largest_cont_df <- subset(merge_bs_dt_df, 
+                          merge_bs_dt_df$name %in% c("WEIL, MONIQUE", "MCLENNAN, MARLYN", "AUSLENDER, LEONARD", "ISERI, MARTIN", 
                                                                             "SPEAR, JOSEPH", "DAVIDSON, LISA")) 
-
-
-
 
 #create regular qplot based on amount
 ggplot(aes(x = amount), data = largest_cont_df)  + 
@@ -754,7 +762,10 @@ cdf <- subset(cdf, select = c("name","canidate","city","zip","employer",
                               "occupation", "amount","date","lon","lat")) #choose particular columns
 row.names(cdf) <- cdf$name #make row into names
 cdf_matrix <- data.matrix(cdf) #create the data into a matrix of numberes
-cdf_heatmap <- heatmap(cdf_matrix, Rowv=NA, Colv=NA, col = colorRampPalette(c("blue", "red"))(100), scale = "column", margins = c(5,10))  # make heatmap
+cdf_heatmap <- heatmap(cdf_matrix, Rowv=NA, Colv=NA, 
+                       col = colorRampPalette(c("blue", "red"))(100), 
+                       scale = "column", margins = c(5,10)) 
+
 ```
 
 ## Description three 
