@@ -26,8 +26,33 @@ features_train, features_test, labels_train, labels_test = preprocess()
 
 #########################################################
 ### your code goes here ###
+def NBAccuracy(features_train, features_test, labels_train, labels_test): 
+    ### import the sklearn module for GaussianNB
+    from sklearn.naive_bayes import GaussianNB
+    from sklearn.metrics import accuracy_score
+
+    
+    clf  = GaussianNB() # create classifier 
+    t0 = time() #create initial time 
+    clf.fit(features_train, labels_train) #create the fitness of classifier 
+    print "training time:", round(time() - t0, 3), "s"
+
+    t1 = time() #create time 
+    pred = clf.predict(features_test)
+    print "predictive time:", round(time() - t1, 3), "s"
 
 
+    accuracy = accuracy_score(labels_test, pred)
+    accuracy = clf.score(features_test, labels_test)
+    return {"You accuracy is": accuracy}
 #########################################################
+
+
+
+##### run code ##### 
+
+if __name__ == '__main__':
+    accuracy = NBAccuracy(features_train, features_test, labels_train, labels_test)
+    print accuracy
 
 
