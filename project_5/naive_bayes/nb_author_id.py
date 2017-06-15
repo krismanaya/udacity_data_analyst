@@ -43,16 +43,17 @@ def NBAccuracy(features_train, features_test, labels_train, labels_test):
 
 
     accuracy = accuracy_score(labels_test, pred)
-    accuracy = clf.score(features_test, labels_test)
+
     return {"You accuracy is": accuracy}
 #########################################################
 
-
+def main(): 
+    accuracy = NBAccuracy(features_train, features_test, labels_train, labels_test)
+    print accuracy
 
 ##### run code ##### 
 
 if __name__ == '__main__':
-    accuracy = NBAccuracy(features_train, features_test, labels_train, labels_test)
-    print accuracy
+    main() #show output. 
 
 

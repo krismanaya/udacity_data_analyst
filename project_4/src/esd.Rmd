@@ -221,32 +221,31 @@ This took me awhile to understand and with a little more investigating you can s
 
 
 # create histogram of count vs amount facet_wrap by canidates. 
-qplot(x = amount, data = merge_bs_dt_df_subset, color = I("black"), 
-      fill = I("firebrick4")) + 
+qplot(x = amount, data = merge_bs_dt_df_subset) + 
   labs(title = "Bernie v Trump Contributions",
        subtitle = "Count vs. Amount", 
        caption = ".gov") + 
-  facet_wrap(~canidate) +
   scale_x_continuous(limits = c(0,1000), breaks = seq(0,1000,100)) + 
   scale_y_continuous(limits = c(0,10000), breaks = seq(0,10000,1000)) 
 
 #take the sqrt and then scale it by base 10.
-ggplot(aes(x = amount, color = I("black"), fill = I("firebrick4")), 
+ggplot(aes(x = amount), 
        data = merge_bs_dt_df_subset) + 
-  geom_histogram(boundary = 0) + 
+  geom_histogram(boundary = 0) +  #set boundary. 
   labs(title = "Bernie v Trump Contributions Base 10",
        subtitle = "Count vs. Amount", 
        caption = ".gov") + 
-  facet_wrap(~canidate) +
   scale_x_continuous(limits = c(0,1000), breaks = seq(0,2000,100)) +
   coord_trans(y ="sqrt") + 
   scale_y_log10() 
 ```
 
 
-Transformed both long tail-esque data to better understand the distribution of amount by each canidate. The transformed amount appears realtively similary with both canidates. Although, 
-Sanders has a bit more contributions that are less then the fifty-dollar range peaking above 10 thousand, while Trump appears to have a larger count of amount around the nine-hundred dollar range. Let's investigate 
-some other variables like cities, Occupation and name.  
+Transformed both long tail-esque data to better understand the distribution of 
+amount of canidates. After the transformation we may see that as the amount 
+increase the count of contributions decreases. This could be because primarly 
+most people who contribute to canidates tend to be more blue collar citizens. Lets 
+take a look at some other variables like cities, Occupation and name.  
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, univariate_plot_partII}
 
@@ -260,13 +259,11 @@ choose_city_df_sample <- subset(merge_bs_dt_df,
                                     "BERKELEY", "LOS ANGELES",
                                     "SACRAMENTO","SAN DIEGO", "OAKLAND", 
                                     "HUNTINGTON BEACH"))
-qplot(x = city, data = choose_city_df_sample, color = I("black"),
-      fill = I("paleturquoise1")) + 
+qplot(x = city, data = choose_city_df_sample) + 
   labs(title = "Bernie v Trump Contributions",
        subtitle = "Count vs. City", 
        caption = ".gov") + 
   theme(axis.text.x = city_text) + 
-  facet_wrap(~canidate) + 
   coord_flip()
 
 ###################################################### Occupation #############################################
@@ -278,13 +275,11 @@ choose_occupation_df_sample <- subset(merge_bs_dt_df,
                                           "INFORMATION REQUESTED", 
                                           "TEACHER", "ENGINEER"))
 
-qplot(x = occupation, data = choose_occupation_df_sample, 
-      color = I("black"), fill = I("pink3")) + 
+qplot(x = occupation, data = choose_occupation_df_sample) + 
   labs(title = "Bernie v Trump Contributions", 
        subtitle = "Count vs. Occupation", 
        caption = ".gov") + 
   theme(axis.text.x = occupation_text) + 
-  facet_wrap(~canidate) + 
   coord_flip()
 
 
@@ -299,19 +294,21 @@ choose_name_df_sample <- subset(merge_bs_dt_df,
                                     "SPEAR, JOSEPH", "DAVIDSON, LISA", 
                                     "(Other)"))
 
-qplot(x = name, data = choose_name_df_sample, 
-      color = I("black"), fill = I("orchid2")) + 
+qplot(x = name, data = choose_name_df_sample) + 
   labs(title = "Bernie V Trump Contributions", 
        subtitle = "Count vs. Name", 
        caption = ".gov") + 
   theme(axis.text.x = occupation_text) + 
-  facet_wrap(~canidate) + 
   coord_flip() #flip coordinates for better read.
 ```
 
-Most Major cities contributed to Bernie's campaign, with pretty smiliary contributions in Bakersfield and Hunnigton Beach. A majority of occuptations that contributed to Bernie's campaign are "Not Employed", 
-while more in Trump's contributions are "RETIRED". Finally, that contributed more then two hundred contributions seem to support the Bernied campaign rather than Trump's. It looks like no large multiple contributions 
-were made with the Trump campaign in California. 
+It looks like most people have contributed in larger metropolitan cities, which 
+is no surprise. If we look at the second plot it is interesting to point out 
+that a large majority of contributors are listed as "Not Employed". My assumption
+would be either a large majority of people contributing to the campaign are really
+looking for a job or "Not Employed" could be used as a place holder. Lastly, 
+we see some poeple have contributed well over two hundred times! That's alot of 
+contributions! Let's investigate more with contirubtors who are unemployed. 
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, not_employed}
@@ -320,7 +317,7 @@ were made with the Trump campaign in California.
 not_employed_df <- subset(merge_bs_dt_df, occupation == "NOT EMPLOYED")
 
 #create plot of amount by unemployment
-ggplot(aes(x = amount, color = I("black"), fill=  I('#F79420')), 
+ggplot(aes(x = amount), 
        data = not_employed_df) +
   geom_histogram(boundary = 0) + #force bondary. 
   labs(title = "Bernie V Trump Contributions", 
@@ -328,18 +325,76 @@ ggplot(aes(x = amount, color = I("black"), fill=  I('#F79420')),
        caption = ".gov") +
   scale_x_continuous(limits = c(0,500)) + 
   scale_y_continuous(limits = c(0,1000)) + 
-  scale_y_log10() + 
-  facet_wrap(~canidate)
+  scale_y_log10() 
 
 #create a summary of amount by state
 by(not_employed_df$amount, not_employed_df$state, summary)
 ```
 
 
-If we consider the unemployment between two canidates it would seem that mister Sanders has the largest. Most poeple who are unemployed 
-fall into the zero to hundred dollar amount while we see a converging pattern as the amount increases. Within the summary we see that 
-the median is exactly twenty-seven dollars the same amount which Mr. Sanders proclaimed in his campaign speeches. 
+As we can see above most people listed as "Not Employed" tend to donate
+less than one-hundread dollars. As the amount converges to a large dollar 
+the count of count of contributions tend to decrease. Let's investiage the median 
+of the unemployment by viewing our summary. Within the summary we can see for 
+unemployed people the median is roughly twenty-seven dollars, falling within 
+the boundary of fifteen to fifty dollars. In my opinion, this seems relative to 
+someone who essentially has no employment but wants to make an impact. However,
+looking at the max it seems odd that someone would be contributing five-thousand
+dollars and they are unemployed. This brings up my suggested conclusion that 
+non-employment might be used as some sort of place holder or test. 
 
+
+In this second graph concerning occupation you can see that people had standard 
+employments such as Teacher, Not Employed, Retired, Clerk and Photographer. 
+What striked me odd in this barplot was some people changed there occupation 
+with donations for example MCLENNAN, MARLYN was listed as RETIRED and NOT EMPLOYED. 
+
+
+# Univariate Analysis 
+
+## What is the structure of your dataset? 
+
+This report explores a dataset containing canidates and attributes for 
+approximately 490,000 contributions with 12 features
+(name,canidate,city,state,zip,employer,occupation,amount,date,receipt,lon,lat). 
+The variables name, canidate, city state, employer, occupation are factors. 
+
+Other observations: 
+* cities with most contributors are leaning liberal
+* largest contributor occupation is not employed 
+* largest count of contributions are Bernie supporters
+* largest refund is more then alloted 10k 
+* biggest contributions is the upperbound of 10k
+
+
+## What is/are the main feature(s) of interest in your dataset? 
+
+the main features of the dataset are amount, city and occupation. 
+I'd like to determine which features 
+are voting for each respected canidates the most and what is their 
+median or max contributions for each canidate 
+as well as top locations. 
+
+
+## Did you create any new variables from existing variables in the dataset? 
+They only feature I truly changed within the data set is the datetime which I re translated it 
+to a more formal method so I may view it during my bivariate plot section. Other then that most variables were just re 
+written to express a more readable form. 
+
+
+## Of the features you investigated, were there any unusual distributions? Did you perform 
+any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this? 
+
+I log-transformed the right skewed of the amount and count of the contributions in the canidate. 
+While the price still has a similar skewedness I wanted to to investigate a 
+deeper understand of the dataset for which it gave me a clear picture and understand 
+of how the data set functioned. Primarly, we can see within the amount that the 
+contributions tend to be more in the below hundred dollar range. In order 
+to investigate this dataset more clear I must use bi-variant plots. 
+
+
+
+# Bivariate Plots Sections
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, largest_contributors}
 
@@ -385,7 +440,7 @@ labs(title = "Largest Contributors") +
   
 
 #color plot 
-ggplot(aes(x = amount, color = I("black"), fill = I('#099DD9')), 
+ggplot(aes(x = amount), 
        data = largest_cont_df) + 
   geom_histogram(boundary = 0 ) + 
   labs(title = "Bernie V Trump Contributions", 
@@ -399,7 +454,7 @@ ggplot(aes(x = amount, color = I("black"), fill = I('#099DD9')),
 ```
 
 
-I wanted to do a step by step approach of the dataset of the names who contributed the most. Within the first three plots I had noticed an error by checking the data set within it's quantiles. It was brought to my attention in the third plot that 1200 observations between 0 and 30 are not identified in the first three plots. This can always be promblematic in dealing with data sets. Fortunately, I was able to remedy the problem by moving the boundary line back to zero and rescaling the data set to show a more accurate description of the original plot. All of these names contributed to the Bernie Sanders campaign as was visualized above. When we zoom in and look closer at the data 
+I wanted to do a step by step approach of the dataset of the names who contributed the most to show that I essentially need a bi-variante graph to get more insight. Within the first three plots I had noticed an error by checking the data set within it's quantiles. It was brought to my attention in the third plot that 1200 observations between 0 and 30 are not identified in the first three plots. This can always be promblematic in dealing with data sets. Fortunately, I was able to remedy the problem by moving the boundary line back to zero and rescaling the data set to show a more accurate description of the original plot. All of these names contributed to the Bernie Sanders campaign as was visualized above. When we zoom in and look closer at the data 
 and seperate the names in each column while taking a log transformation of the slightly skewed chart we can get a very clear visualization of how the contributors spread out there payments. I didn't want to get into the refund payments just yet in the data set because it requires multiple variables to investigate further, but as you can see from the chart above most of the contributions to the Sanders Campaign were paid around a wide variety of ranges.
 
 
@@ -410,8 +465,7 @@ summary(merge_bs_dt_df)
 occupation_text <- element_text(size = 8) #change x.axis text
 
 #create a plot of occupation from largest contributors
-qplot(x = occupation, data = largest_cont_df, color = I("black"), 
-      fill = I("#099DD9")) + 
+qplot(x = occupation, data = largest_cont_df, color = I("black")) + 
   labs(title = "Bernie V Trump Contributions", 
        subtitle = "Largest Contributors by Occupation", 
        caption = ".gov") +
@@ -427,41 +481,6 @@ In this second graph concerning occupation you can see that people had standard 
 What striked me odd in this barplot was some people changed there occupation with donations for example MCLENNAN, MARLYN was listed as RETIRED and NOT EMPLOYED. 
 
 
-# Univariate Analysis 
-
-## What is the structure of your dataset? 
-
-This report explores a dataset containing canidates and attributes for approximately 490,000 contributions with 12 features
-(name,canidate,city,state,zip,employer,occupation,amount,date,receipt,lon,lat). The variables name, canidate, city state, employer, occupation are factors. 
-
-Other observations: 
-* cities with most contributors are leaning liberal
-* largest contributor occupation is not employed 
-* largest count of contributions are Bernie supporters
-* largest refund is more then alloted 10k 
-* biggest contributions is the upperbound of 10k
-
-
-## What is/are the main feature(s) of interest in your dataset? 
-
-the main features of the dataset are amount, city and occupation. I'd like to determine which features 
-are voting for each respected canidates the most and what is their median or max contributions for each canidate 
-as well as top locations. 
-
-
-## Did you create any new variables from existing variables in the dataset? 
-They only feature I truly changed within the data set is the datetime which I re translated it 
-to a more formal method so I may view it during my bivariate plot section. Other then that most variables were just re 
-written to express a more readable form. 
-
-
-## Of the features you investigated, were there any unusual distributions? Did you perform 
-any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this? 
-
-I log-transformed the right skewed of the amount and count of the contributions in the canidate. While the price still has a similar skewedness I wanted to to investigate a deeper understand of the dataset for which it gave me a clear picture and understand of how the data set functioned. Primarly, we can see within the amount that the Sander's group tends to contribute more in the below hundred dollar range while Trump's group tends to follow a higher contribution pattern. Most of the distrobutions had okay patterns. They only real unusual visualization I saw was employment being change by person in the largest contributions by occupation graph. 
-
-
-# Bivariate Plots Sections
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # select some variables that you want to use in your comparison
@@ -503,11 +522,11 @@ text_size <- element_text(size = 5)
 
 #create histogram of canidates by date
 ggplot(merge_samp, aes(x = date, y = amount)) + 
-  geom_line(aes(color= canidate), stat="identity", 
+  geom_line(stat="identity", 
             position = position_nudge()) + 
  theme(axis.text.x = text_size) + 
   scale_color_manual(values=c("deepskyblue3", "firebrick3")) +   
-  xlab("Date") + ylab("Canidate") + # Set axis labels
+  xlab("Date") + ylab("Amount") + # Set axis labels
   ggtitle("Contributions by Date") +     # Set title
   theme_bw()
 
@@ -515,14 +534,25 @@ ggplot(merge_samp, aes(x = date, y = amount)) +
 ```
 
 
-As the date moves into the election you see that donald Trump contributions are growning and Bernies are decreasing. 
-This is due to the fact that Donald Trump went on to become the Repulican party canidate and Bernie Sanders had to drop out of the 
-race. Let's look at this in a more normal distrubtion. 
+As the date moves into the election you see that contributions are growning and falling. 
+This really shows us a lot of noise and not a real indication of how contributions are created 
+but let's analyze this noise anyway. It seems to me that a bulk of the contributions 
+were made around July. Since it's the summer time canidates really take advantage of this 
+by campaigning because people are usually more inclined to be more active in the warmer 
+months. However, as we see near october and november there is a relative dip around 
+the contribtuions. This is probably due to the fact that the election is drawing to 
+and end. There are many refunds made around this time. While I investigated the legality 
+of refunds outside of my data exploration, it is still very unclear how refunds are made. 
+Primarly, this is due to people wanting there moneyback, illegal contributions or 
+just basically run as a test within the dataset. Regardless, it seems like lots of refunds
+were granted after the summer expired. 
+
 
 ```{r echo=FALSE, message=FALSE, warning = FALSE, bivariante_plotsII}
-
+#set text size
+text_size <- element_text(size = 10)
 #create histogram of canidates by date but facet_wrap it in one column
-ggplot(merge_samp, aes(x = date, y = canidate, fill = canidate)) + 
+ggplot(merge_samp, aes(x = date, y = canidate)) + 
   geom_histogram(stat="identity") + 
   theme(axis.text.x = text_size,
         axis.title.y=element_blank(),
@@ -539,6 +569,26 @@ by(merge_samp$date, merge_samp$canidate, summary)
 
 Clearly we see that Sanders' campaign is increasing as the months go on peacking around the third or forth month of 2016. We don't see 
 large contributions in Donald Trump until the June mark. This could be due to teh fact that he was nominated aroudn this time or it's possible that California was still not interested in Donald Trump being the Republican canidate and still was hoping for a more moderate conservative like Jeb Bush or John Kasich. These plots do paint a very well detailed portrait of the canidates time running for president. 
+
+# Bivariate Analysis 
+
+## Talk aboust some of the relationships you oberseved in this part of the investiations. 
+How did the features of interest vary with other features in the dataset. 
+
+the only true correlation I could do on this dataset was amount and zip_code using pearson 
+and it found no real true correlation (something closer to zero) or around twenty percent negative correlation. Which means it the price of contributions is pretty all across the board in each zip code. I must stress again that the datasets that were both gathered on the government website are skewed in size, Bernie's being higher, but taking that into account there is a strong notion that Bernie's footnote campaign talk about the average american spending roughly twenty-seven dollars in this contributions seems to be right on the money. However, Sanders did not explain the large amount of refends he was getting from contributors. Trump's, while low, seems to follow a normal uniform pattern in campaign contributions which just shows he's steadly reaching the finish line. 
+
+## Did you obesrve any interesting relationships between teh other features? 
+
+There isn't really any true relationship across the board in this dataset it really just outlines that the Sanders campaign had many contributors who seemed to be up and down along the campaign while Trump's supports were steady and consistent. 
+
+
+## What is the strongest data point you found? 
+the strongest thing I found was Bernie Sanders footnote of twenty-seven dollars. I though that was pretty wonderful. 
+
+
+# Multivariate Plots Section and Summary
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, line_graphs}
 
@@ -660,27 +710,6 @@ cor.test(merge_bs_dt_df$zip,merge_bs_dt_df$amount, method = "pearson")
 We can now see that most of the the regunds fall into a median point for Sanders less then negative five hundred dollars. While, the Trump team seems to have small strips. If we view the postive amount, meaning the contributions, 
 we see that by city the median rate is in twenty-seven mark for Bernie Sanders (which was a campaign footnote) while Trump's falls in the forty-nine to fifty range. 
 
-# Bivariate Analysis 
-
-## Talk aboust some of the relationships you oberseved in this part of the investiations. 
-How did the features of interest vary with other features in the dataset. 
-
-the only true correlation I could do on this dataset was amount and zip_code using pearson 
-and it found no real true correlation (something closer to zero) or around twenty percent negative correlation. Which means it the price of contributions is pretty all across the board in each zip code. I must stress again that the datasets that were both gathered on the government website are skewed in size, Bernie's being higher, but taking that into account there is a strong notion that Bernie's footnote campaign talk about the average american spending roughly twenty-seven dollars in this contributions seems to be right on the money. However, Sanders did not explain the large amount of refends he was getting from contributors. Trump's, while low, seems to follow a normal uniform pattern in campaign contributions which just shows he's steadly reaching the finish line. 
-
-## Did you obesrve any interesting relationships between teh other features? 
-
-There isn't really any true relationship across the board in this dataset it really just outlines that the Sanders campaign had many contributors who seemed to be up and down along the campaign while Trump's supports were steady and consistent. 
-
-
-## What is the strongest data point you found? 
-the strongerst thing I found was Bernie Sanders footnote of twenty-seven dollars. I though that was pretty wonderful. 
-
-
-
-
-# Multivariate Plots Section and Summary
-
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, line_box_graphs}
 
@@ -746,23 +775,34 @@ ggplot(data = ca_county, aes(x = long, y = lat, group = group)) + #chgoose ca_co
 
 
 
+
 # heat map for trump and bernie.
-set.seed(234190) #set seed
-cdf <- merge_bs_dt_df[order(merge_bs_dt_df$canidate), ] #order the dataframe by canidate
-cdf <- cdf[sample(1:length(cdf$amount), 50), ] #create a sample of 50 poeple in dataset
-cdf <- subset(cdf, select = c("name","canidate","city","zip","employer", 
-                              "occupation", "amount","date","lon","lat")) #choose particular columns
-row.names(cdf) <- cdf$name #make row into names
-cdf_matrix <- data.matrix(cdf) #create the data into a matrix of numberes
-cdf_heatmap <- heatmap(cdf_matrix, Rowv=NA, Colv=NA, 
-                       col = colorRampPalette(c("blue", "red"))(100), 
-                       scale = "column", margins = c(5,10))  # make heatmap
+top_city <- names(sort(table(merge_bs_dt_df$city), decreasing = TRUE))[1:10] #top_city data
+top_jobs <- names(sort(table(merge_bs_dt_df$occupation), decreasing = T))[1:10] #top_jobs column
+
+logical_top_city_jobs <- (merge_bs_dt_df$city %in% top_city) &
+  (merge_bs_dt_df$occupation %in% top_jobs) #merge 
+
+#create heat map with legend. 
+ggplot(merge_bs_dt_df[logical_top_city_jobs, ], aes(x = city, y = occupation)) +
+  stat_bin2d() +
+  scale_fill_gradient(trans = 'log', low = 'blue', high = 'red') +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  facet_wrap(~canidate, ncol = 1)
+
 ```
 
 
-These last two graphs show the overall range of were people are contribution. As you have noticed in the map you see a lot of red within the San Diego region and more across the ocean. However, these regions 
-to have some dots for Bernie. Purple represents counties and cities where you have equal amounts of of contributions. However, this is more indepth with a sample size of 50 contributors with the heat map. 
-Within the heat map you see most of the areas are converging to purple with some leaning blue and other leaning more red. This gives us a good representation how the overall distrubtion of how voters were contributing in California. 
+These last two graphs show the overall range of were people are contribution. 
+As you have noticed in the map you see a lot of red within the San Diego region 
+and more across the ocean. However, these regions 
+to have some dots for Bernie. Purple represents counties and cities 
+where you have equal amounts of of contributions. Let's investigate this deeper
+with the heat map. Overally, it is true that most people are going to be 
+contributing that are Not Employed. But it seems that Retired people 
+have also contributed a bit to the campaign as well as teachers. One of the problems
+in this set can be shown that Mr Sanders had a larger set to deal with while Trump 
+did not. 
 
 
 # Multivariate Analysis
@@ -829,22 +869,29 @@ This plot indicates how major cities contributed to the campaign. As you can see
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, heat_map_final}
 # heat map for trump and bernie.
-set.seed(234190) #set seed
-cdf <- merge_bs_dt_df[order(merge_bs_dt_df$canidate), ] #order the dataframe by canidate
-cdf <- cdf[sample(1:length(cdf$amount), 50), ] #create a sample of 50 poeple in dataset
-cdf <- subset(cdf, select = c("name","canidate","city","zip","employer", 
-                              "occupation", "amount","date","lon","lat")) #choose particular columns
-row.names(cdf) <- cdf$name #make row into names
-cdf_matrix <- data.matrix(cdf) #create the data into a matrix of numberes
-cdf_heatmap <- heatmap(cdf_matrix, Rowv=NA, Colv=NA, 
-                       col = colorRampPalette(c("blue", "red"))(100), 
-                       scale = "column", margins = c(5,10)) 
+top_city <- names(sort(table(merge_bs_dt_df$city), decreasing = TRUE))[1:10] #top_city data
+top_jobs <- names(sort(table(merge_bs_dt_df$occupation), decreasing = T))[1:10] #top_jobs column
+
+logical_top_city_jobs <- (merge_bs_dt_df$city %in% top_city) &
+  (merge_bs_dt_df$occupation %in% top_jobs) #merge 
+
+#create heat map with legend. 
+ggplot(merge_bs_dt_df[logical_top_city_jobs, ], aes(x = city, y = occupation)) +
+  stat_bin2d() +
+  scale_fill_gradient(trans = 'log', low = 'blue', high = 'red') +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  facet_wrap(~canidate, ncol = 1)
 
 ```
 
 ## Description three 
 
-This heat map shows a sample of 50 contributors for Bernie and Trujmp which shows a realtive equal pattern between contributions. While some are more left leaning and dmore right a majority fall into the purple category. 
+The heat map shows the count of occupation by city regarding Donald J Trump 
+and Bernie Sanders. You can see for Mr. Trump a large majority of contributors 
+are Retired. This can be due to the fact that apparently, when people become older
+they become more conservative. The larger count for Sanders seems to fall 
+in the "Not Employed" section. However, the data set between the two individuals 
+are not relative in size. 
 
 # Reflection 
 

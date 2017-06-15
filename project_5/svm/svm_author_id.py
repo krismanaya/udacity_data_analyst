@@ -19,12 +19,30 @@ from email_preprocess import preprocess
 ### labels_train and labels_test are the corresponding item labels
 features_train, features_test, labels_train, labels_test = preprocess()
 
+########################## SVM #################################
+### we handle the import statement and SVC creation for you here
+
+def SVMAccuracy(features_train, features_test, labels_train, labels_test): 
+
+    from sklearn.svm import SVC
+    clf = SVC(kernel="linear")
+    clf.fit(features_train, labels_train) # create a fit. 
+
+    pred = clf.predict(features_test) # prediction from test. 
+
+    from sklearn.metrics import accuracy_score #import accuracy.
+    acc = accuracy_score(pred, labels_test) #create accuracy
+    return acc
 
 
+def main(): 
+    print {"Your Accuracy Score": SVMAccuracy(features_train, 
+                                              features_test, 
+                                              labels_train, 
+                                              labels_test)} # create an output. 
 
-#########################################################
-### your code goes here ###
-
-#########################################################
+#run code
+if __name__ == '__main__': 
+    main() # print accuracy
 
 
