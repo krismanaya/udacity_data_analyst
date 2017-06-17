@@ -19,8 +19,6 @@ from email_preprocess import preprocess
 features_train, features_test, labels_train, labels_test = preprocess()
 
 
-
-
 ########################################################
 def DTAccuracy(features_test, labels_test): 
     from sklearn.metrics import accuracy_score #accuracy score
@@ -43,7 +41,7 @@ def DTAccuracy(features_test, labels_test):
 def classify(features_train, labels_train): 
     from sklearn import tree # import dt
 
-    clf = tree.DecisionTreeClassifier() # create classifier
+    clf = tree.DecisionTreeClassifier(min_samples_split = 40) # create classifier
     clf = clf.fit(features_train, labels_train) # fit training set 
     
     return clf
@@ -54,7 +52,7 @@ def main():
     
     clf = classify(features_train, labels_train)
     accuracy = DTAccuracy(features_test,labels_test)
-
+    print len(features_train[0]) #length of the rows of features
     print clf 
     print accuracy
     
