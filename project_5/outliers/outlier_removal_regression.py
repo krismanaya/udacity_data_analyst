@@ -26,22 +26,20 @@ ages_train, ages_test, net_worths_train, net_worths_test = train_test_split(ages
 ### fill in a regression here!  Name the regression object reg so that
 ### the plotting code below works, and you can see what your regression looks like
 
+from sklearn import linear_model 
+reg = linear_model.LinearRegression() 
+reg.fit(ages_train,net_worths_train) # feature_train, target_train
+print "slope:", reg.coef_ #prints the coeficient of the linear function
+print "intercept:", reg.intercept_ # prints intercept
+print "r-squared train-score:", reg.score(ages_test,net_worths_test) # train 
+#print "r-squared test-score:", reg.score(feature_test, target_test) # test
 
-
-
-
-
-
-
-
-
-
-try:
-    plt.plot(ages, reg.predict(ages), color="blue")
-except NameError:
-    pass
-plt.scatter(ages, net_worths)
-plt.show()
+# try:
+#     plt.plot(ages, reg.predict(ages), color="blue")
+# except NameError:
+#     pass
+# plt.scatter(ages, net_worths)
+# plt.show()
 
 
 ### identify and remove the most outlier-y points
@@ -68,6 +66,8 @@ if len(cleaned_data) > 0:
     ### refit your cleaned data!
     try:
         reg.fit(ages, net_worths)
+        print "slope:",reg.coef_
+        print "r-squared train-score:", reg.score(ages_test,net_worths_test)
         plt.plot(ages, reg.predict(ages), color="blue")
     except NameError:
         print "you don't seem to have regression imported/created,"
