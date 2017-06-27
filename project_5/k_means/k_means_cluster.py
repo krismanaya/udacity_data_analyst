@@ -10,6 +10,7 @@
 import pickle
 import numpy
 import matplotlib.pyplot as plt
+import pprint
 import sys
 sys.path.append("../tools/")
 from feature_format import featureFormat, targetFeatureSplit
@@ -44,10 +45,32 @@ data_dict = pickle.load( open("../final_project/final_project_dataset.pkl", "r")
 data_dict.pop("TOTAL", 0)
 
 
+# functionfinds the maximum and minum values for the data features. 
+def find_max_min(data,feature): 
+    
+    max_value = float("-inf")
+    min_value = float("inf")
+
+    for k,v in data.iteritems(): 
+        if v[feature] != "NaN": 
+            if v[feature] > max_value: 
+                max_value = v[feature]
+            if v[feature] < min_value: 
+                min_value = v[feature]
+
+    print(feature)
+    print("max_value:", max_value)
+    print("min_value:", min_value)
+
+find_max_min(data_dict, "exercised_stock_options")
+find_max_min(data_dict, "salary")
+find_max_min(data_dict, "total_payments")
+
 ### the input features we want to use 
 ### can be any key in the person-level dictionary (salary, director_fees, etc.) 
 feature_1 = "salary"
 feature_2 = "exercised_stock_options"
+#feature_3 = "total_payments"
 poi  = "poi"
 features_list = [poi, feature_1, feature_2]
 data = featureFormat(data_dict, features_list )
@@ -58,13 +81,28 @@ poi, finance_features = targetFeatureSplit( data )
 ### you'll want to change this line to 
 ### for f1, f2, _ in finance_features:
 ### (as it's currently written, the line below assumes 2 features)
-for f1, f2 in finance_features:
-    plt.scatter( f1, f2 )
+for f1, f2, in finance_features:
+    plt.scatter(f1,f2)
 plt.show()
 
 ### cluster here; create predictions of the cluster labels
 ### for the data and store them to a list called pred
+from sklearn.cluster import KMeans 
+from sklearn.preprocessing import MinMaxScaler 
+"""essentially, what you are trying to achieve is 
+   creating a k_means clf and setting two clusters fitting those 
+   clusters to the finance_feature and then using the same prediction on
+   the finance features. This is similar with the poi feature (person/of/intrest)."""
 
+
+scaler = scaler = MinMaxScaler() #scalar
+rescaled_finance_features = scaler.fit_transform(finance_features)
+financial_features_test = numpy.array([200000., 1000000.]) # finance test
+financial_features_test_transformed = scaler.transform(financial_features_test)
+print financial_features_test_transformed
+
+kmeans = KMeans(n_clusters = 2).fit(finance_features) # fitness
+pred = kmeans.predict(finance_features)
 
 
 
