@@ -41,6 +41,7 @@ def parseOutText(f):
 
         ### append stemmer to words.
         plurals = text_string.split()
+        ### create list of stemmed words. 
         singles = [stemmer.stem(plural) for plural in plurals]
 
 

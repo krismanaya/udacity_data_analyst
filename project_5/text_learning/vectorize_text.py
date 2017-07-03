@@ -54,6 +54,8 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
             text = text.replace("shackleton", "")
             text = text.replace("chris", "")
             text = text.replace("germani","")
+            text = text.replace("sshacklensf", "")
+            text = text.replace("cgermannsf", "")
 
 
 
@@ -82,7 +84,7 @@ pickle.dump( from_data, open("your_email_authors.pkl", "w") )
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords
 
-vectorizer = TfidfVectorizer(stop_words = "english", lowercase = True) # call instance of vectorizer 
+vectorizer = TfidfVectorizer(stop_words = "english", lowercase = True, max_df = 0.5) # call instance of vectorizer 
 vectorizer.fit(word_data) # call fit
 vectorizer.transform(word_data) # transform the bag o words
 vocab_list = vectorizer.get_feature_names()
