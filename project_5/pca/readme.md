@@ -63,3 +63,63 @@ essentially, we want to creat a vector where the distance of the projection onto
 ### PCA as a General Algorithm for feature transformation 
 
 
+<img src= "p_images/example_5.png" alt= "PCA" style = "widht: 500px;"/> 
+
+### Review / Definition of PCA 
+
+- Systematized way to transform input features into principal components 
+- use principal components as new features 
+- PCs are directions in the data that maximize variance (minimize information loss) when you project / compress down onto them 
+- more variance of data along a PC, higher than PC is ranked 
+- most variance / most information --> first PC 
+    - most variance (without overlapping w/ first PC) -- > Second PC
+- max no. of PCs = no. of input features. 
+
+### PCA in SKLEARN 
+
+``` python
+    def doPCA(): 
+        from sklearn. decomposition import PCA 
+        pca = PCA(n_components = 2) 
+        pca.fit(data) 
+        return pca 
+    pca = doPCAA() # here it is folks. 
+    print pca.explained_variance_ratio # explains its maximal variance eigenvalues 
+    first_pc = pca.components_[0] # one component projection 
+    second_pc = pca.components_[1] # second  . . . 
+    
+    transform_data = pca.transform(data) 
+    for ii, jj in zip(transformed_data, data): 
+        """This loop shows us what the transformed data is doing compared 
+        to the original data set """
+        
+        plt.scatter(first_pc[0]*ii[0], first_pc[1]*ii[0], color = "r") 
+        plt.scatter(second_pc[0]*ii[0], second_pc[1]*ii[0], color = "c") 
+        plot.scatter(jj[0], jj[1], color = "b") 
+    
+```
+
+<img src="p_images/example_6.png" alt = "PCA" style= "width: 500px;" /> 
+As you can see from above we have some orthognality within the two vectors. 
+
+
+### When to use PCA 
+
+- Latent features driving the patterns in the data (big shots @ enron) 
+- dimensionality reduction 
+    - visualize high -dimensional data dim(3,4, . . ) proj down to 2 dims
+    - reduce noise 
+    - make other algorithms (regression, classification) 
+      - word better b/c fewer inputs (eigenfaces) 
+
+
+### PCA for Facial Recongnition 
+
+** What makes facial recognition in pictures good for PCA**? 
+- pictures of faces generally have high input dimensions / many pixels 
+- faces have general patterns that could be captured in smaller number of dimensions 
+
+
+#### EigenFaces Code 
+
+``` eigenfaces.py ``` in src code
