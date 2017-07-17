@@ -1,4 +1,4 @@
-# Identify Frad from Enron Email
+# Identify Fraud from Enron Email
 
 ## Project Overview 
 

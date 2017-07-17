@@ -2,6 +2,8 @@
 
 import sys
 import pickle
+import pprint
+import matplotlib.pyplot as plt
 sys.path.append("../tools/")
 
 from feature_format import featureFormat, targetFeatureSplit
@@ -10,16 +12,46 @@ from tester import dump_classifier_and_data
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-features_list = ['poi','salary'] # You will need to use more features
+
+
+features_list = ['poi','salary','bonus'] # You will need to use more features
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
 
 ### Task 2: Remove outliers
+### Decided to only remove total as an outlier first
+### With selected features
+
+features = ['salary','bonus'] 
+data_dict.pop("TOTAL") 
+
+for person in data_dict: 
+    salary = data_dict[person][features[0]]
+    bonus = data_dict[person][features[1]]
+    if salary != 'NaN' and bonus != 'NaN' and salary >= 1000000 and bonus > 1000000:
+        print person
+
+data = featureFormat(data_dict, features)
+
+for point in data:
+    salary = point[0]
+    bonus = point[1]
+#   plt.scatter(salary,bonus)
+
+print "Size of data {0}", format(data.shape)
+salary = []; bonus = []
+salary = data[:,0] 
+bonus = data[:,1]
+plt.scatter(salary,bonus)
+plt.xlabel('salary')
+plt.ylabel('bonus')
+plt.show()
 ### Task 3: Create new feature(s)
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
+
 
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, features_list, sort_keys = True)
