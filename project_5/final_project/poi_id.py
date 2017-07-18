@@ -23,6 +23,8 @@ with open("final_project_dataset.pkl", "r") as data_file:
 ### Task 2: Remove outliers
 ### Decided to only remove total as an outlier first
 ### With selected features
+### Output now selects "SKILLING JEFFREY K, FREVERT MARK, A", which should
+### not be removed.
 
 features = ['salary','bonus'] 
 data_dict.pop("TOTAL") 
