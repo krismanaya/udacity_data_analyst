@@ -142,7 +142,7 @@ features_train, features_test, labels_train, labels_test = cross_validation.trai
 clf = tree.DecisionTreeClassifier(class_weight='balanced', criterion='entropy',
             max_depth=6, max_features=None, max_leaf_nodes=None,
             min_samples_leaf=2, min_samples_split=1,
-            min_weight_fraction_leaf=0.0, presort=False, random_state=3,
+            min_weight_fraction_leaf=0.0, presort=False, random_state=42,
             splitter='best')
 
 dump_classifier_and_data(clf, my_dataset, features_list)
