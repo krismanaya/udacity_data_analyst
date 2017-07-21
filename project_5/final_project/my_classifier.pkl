@@ -34,7 +34,7 @@ NsS'max_features_'
 p15
 NsS'min_samples_leaf'
 p16
-I2
+I1
 sS'max_features'
 p17
 NsS'min_weight_fraction_leaf'
@@ -48,10 +48,10 @@ sS'max_leaf_nodes'
 p21
 NsS'min_samples_split'
 p22
-I1
+F0.99
 sS'max_depth'
 p23
-I6
+I2
 sS'class_weight'
 p24
 S'balanced'

@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np 
 import pprint
-import warnings
-warnings.filterwarnings('ignore')
+# import warnings
+# warnings.filterwarnings('ignore')
 from time import time 
 
 sys.path.append("../tools/")
@@ -38,17 +38,9 @@ from sklearn.ensemble import RandomForestRegressor  ### goot for non-linear
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
 
-
-features_list = ['poi','salary', 'deferral_payments', 'total_payments', 
-                 'loan_advances', 'bonus', 'restricted_stock_deferred', 
-                 'deferred_income', 'total_stock_value', 'expenses', 
-                 'exercised_stock_options', 'other', 
-                 'long_term_incentive', 'restricted_stock', 
-                 'director_fees','to_messages',  
-                 'from_poi_to_this_person', 'from_messages', 
-                 'from_this_person_to_poi', 'shared_receipt_with_poi', 
-                 'salary_bonus_ratio', 'exercised_ratio', 'total_sp_ratio', 
-                 'restricted_ratio','to_poi_ratio', 'from_poi_ratio']
+features_list =  ['poi', 'total_stock_value', 'to_poi_ratio', 'restricted_ratio','exercised_ratio',
+                'long_term_incentive', 'from_poi_to_this_person','from_this_person_to_poi',
+                'from_messages', 'other', 'expenses','exercised_stock_options','salary_bonus_ratio']
 
 # You will need to use more features
 
@@ -73,14 +65,17 @@ df.replace("NaN", 0, inplace= True)
 
 df = df.drop(["TOTAL", 'THE TRAVEL AGENCY IN THE PARK'])
 
-
-### Task 3: Create new feature(s)
-
 ### Replace 0 to np.nan 
 
 df.replace(0, np.nan, inplace= True)
 
+### Task 3: Create new feature(s)
+### Below are new financial features ['salary_bonus_ratio', 
+###                                    'exercised_ratio', 'total_sp_ratio', 
+###                                    'restricted_ratio','to_poi_ratio', 'from_poi_ratio'] 
+
 ### financial features 
+
 df['salary_bonus_ratio'] = df['salary'] / df['bonus']
 
 df['exercised_ratio']    = df['exercised_stock_options'] / df['total_stock_value']
@@ -116,8 +111,8 @@ labels, features = targetFeatureSplit(data)
 ### http://scikit-learn.org/stable/modules/pipeline.html
 
 # Provided to give you a starting point. Try a variety of classifiers.
-from sklearn.naive_bayes import GaussianNB
-clf = GaussianNB()
+# from sklearn.naive_bayes import GaussianNB
+# clf = GaussianNB()
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
 ### using our testing script. Check the tester.py script in the final project
@@ -129,20 +124,21 @@ clf = GaussianNB()
 
 # Example starting point. Try investigating other evaluation techniques!
 ### create a test an train cv using 30% test_size
-features_train, features_test, labels_train, labels_test = cross_validation.train_test_split(features, 
-                                                                                             labels, 
-                                                                                             test_size = 0.3, 
-                                                                                             random_state = 42)
+# features_train, features_test, labels_train, labels_test = cross_validation.train_test_split(features, 
+#                                                                                              labels, 
+#                                                                                              test_size = 0.3, 
+#                                                                                              random_state = 42)
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
+### fixed value error for min_samples_split. Chose 0.99 not 1.
 
-clf = tree.DecisionTreeClassifier(class_weight='balanced', criterion='entropy',
-            max_depth=6, max_features=None, max_leaf_nodes=None,
-            min_samples_leaf=2, min_samples_split=1,
-            min_weight_fraction_leaf=0.0, presort=False, random_state=42,
-            splitter='best')
+clf = tree.DecisionTreeClassifier(class_weight="balanced", criterion="entropy", 
+                                 max_depth = 2, max_features = None, max_leaf_nodes = None, 
+                                 min_samples_leaf = 1, min_samples_split = 0.99, 
+                                 min_weight_fraction_leaf=0.0, presort = False, random_state=42, 
+                                 splitter= "best")
 
 dump_classifier_and_data(clf, my_dataset, features_list)
