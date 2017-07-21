@@ -18,34 +18,53 @@ ANSWER: The goal of this project was to try an find the best precision and recal
 
 ANSWER: When I decided to approach the DecisionTreeClassifier as something that could possibly achieve our .3 threshold for precision and recall score I wanted to understand which features could impact the scaling process. After I attempted to re-create financial features to do ratios of finances and emails, I performed the object feature_importances_ within my DecisionTreeClassifier. I discovered that two financial ratios that I created ended up becoming very importance new re-scaled features for my classifier to identify POIs. My feature importances were as followed: 
 
-Features sorted by their score:
+######################################### Original Features ##############################################
+Original Features sorted by their score:
 [(0.36, 'total_stock_value'),
- (0.25, 'exercised_stock_options'),
- (0.19, 'restricted_ratio'),
+ (0.18, 'long_term_incentive'),
+ (0.15, 'from_poi_to_this_person'),
  (0.13, 'from_this_person_to_poi'),
- (0.07, 'exercised_ratio'),
- (0.0, 'total_sp_ratio'),
+ (0.06, 'from_messages'),
+ (0.05, 'other'),
+ (0.05, 'expenses'),
+ (0.03, 'exercised_stock_options'),
  (0.0, 'total_payments'),
- (0.0, 'to_poi_ratio'),
  (0.0, 'to_messages'),
- (0.0, 'shared_receipt_with_poi'),
- (0.0, 'salary_bonus_ratio'),
  (0.0, 'salary'),
  (0.0, 'restricted_stock_deferred'),
  (0.0, 'restricted_stock'),
- (0.0, 'poi'),
- (0.0, 'other'),
- (0.0, 'long_term_incentive'),
  (0.0, 'loan_advances'),
- (0.0, 'from_poi_to_this_person'),
- (0.0, 'from_messages'),
- (0.0, 'expenses'),
  (0.0, 'director_fees'),
  (0.0, 'deferred_income'),
  (0.0, 'deferral_payments'),
  (0.0, 'bonus')]
 
-In the end I actually selected all the features because it ended up performing the best (except email). My analysis for the new features can be view within the Python Notebook under feature selection. 
+
+######################################### New Features ##############################################
+Original Features sorted by their score:
+[(0.29, 'to_poi_ratio'),
+ (0.26, 'restricted_ratio'),
+ (0.22, 'exercised_ratio'),
+ (0.02, 'salary_bonus_ratio'),
+ (0.0, 'total_sp_ratio')]
+
+
+######################################### Best Features ##############################################
+Original Features sorted by their score:
+[(0.47, 'other'),
+ (0.22, 'total_stock_value'),
+ (0.08, 'from_this_person_to_poi'),
+ (0.07, 'long_term_incentive'),
+ (0.05, 'to_poi_ratio'),
+ (0.05, 'restricted_ratio'),
+ (0.03, 'expenses'),
+ (0.03, 'exercised_stock_options'),
+ (0.0, 'from_poi_to_this_person'),
+ (0.0, 'from_messages'),
+ (0.0, 'exercised_ratio')]
+
+
+While deciding the the best F1 score we have also seen above what features are important in obtaining this score. I believe all the other features are just going to generalize too much and are not useful for chosing this classifier. The best score I could obtain was 0.483, which is a little off of the .5 mark I wanted to settle with. What we see above is the outlined features, one with the new created features, old features. When intersected the fetures, I got the Best Features let's see how the run time is for this using GridSearch using best featuers
 
 3) What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?  [relevant rubric item: “pick an algorithm”]
 
@@ -68,26 +87,38 @@ With the first pass with all my algorithms I've decided is actually not bad. Eac
 4) What does it mean to tune the parameters of an algorithm, and what can happen if you don’t do this well?  How did you tune the parameters of your particular algorithm? What parameters did you tune? (Some algorithms do not have parameters that you need to tune -- if this is the case for the one you picked, identify and briefly explain how you would have done it for the model that was not your final choice or a different model that does utilize parameter tuning, e.g. a decision tree classifier).  [relevant rubric items: “discuss parameter tuning”, “tune the algorithm”]
 
 ANSWER: Well we want to optimize the best performance of our algorithm based on the data so the parameters give us that option
-if certain parameters are not tuned well it can lead to overfitting or incorrectly outputting a correct accuracy. Having said that, the primary goal for this project was to set our parameters to optimize the results of POIs. I tuned my DecisionTreeClassifier parameters using grid search were I selected the best random_state, criterion, class_weight, depth_range, leaf_range, sample_split and let GridSearch run each test and output the best score based on the parameters I asked it to model. This can be quite lengthy in fact it took roughly 184.325 seconds to fine tune these parameters to my liking
+if certain parameters are not tuned well it can lead to overfitting or incorrectly outputting a correct accuracy this is simple known as (TUNING) the parameters. The main goal of tuning our DTC is  to create a well readable precision and recall score for Identify POIs within the data set. We may have a possibility of overfitting our model which it will learn the detailed noise to the extent that it impacts the performance rate of the new model. For example, it is possible that DTC could be subject to overfitting by fine tuning parameters. Underfitting is possible is well, but we remedy this by trying to tackler other learning algorithms. 
+
+
+
 
 5) What is validation, and what’s a classic mistake you can make if you do it wrong? How did you validate your analysis?  [relevant rubric items: “discuss validation”, “validation strategy”]
 
-ANSWER: Essentially, I followed the task that was asked of me in the training videos. I started a model construction, selection of architecture and training parameters for my classifier, model training using the data set that was provided, model the validation by applying cross validation or least-squares, when back and went through the process again until i was satisfied then I selected an optimal best model and finally modeled testing using the entire independent data set.
-
+ANSWER: What is validation - Model validation is the preferred training method of building a model. This is important because it is used for parameters selections and to avoid overfitting. A classic mistake would be if your model is non-linear and is training on a training set only, it could be likely to get 100% accuracy and overfit. This would cause poor performance on the test set. A way I avoided this within my analysis was to use cross validation methods. 
 
 6) Give at least 2 evaluation metrics and your average performance for each of them.  Explain an interpretation of your metrics that says something human-understandable about your algorithm’s performance. [relevant rubric item: “usage of evaluation metrics”]
 
 ANSWER: I used a classification report which gives us the precision, recall, accuracy, F1 and F2 scores. Below is my metrics for my first pass of the Decision Tree Classifier. If you’d like to view each classification report for each classifier please view the python notebook: 
 
+DecisionTreeClassifier(class_weight='balanced', criterion='entropy',
+            max_depth=2, max_features=None, max_leaf_nodes=None,
+            min_samples_leaf=1, min_samples_split=0.99,
+            min_weight_fraction_leaf=0.0, presort=False, random_state=42,
+            splitter='best')
+	Accuracy: 0.82521	Precision: 0.42741	Recall: 0.65800	F1: 0.51821	F2: 0.59392
+	Total predictions: 14000	True positives: 1316	False positives: 1763	False negatives:  684	True negatives: 10237
 
-            precision    recall  f1-score   support
+With our precision and recall metric it is useful to recall a confusion matrix:
 
-        0.0       0.89      0.91      0.90        34
-        1.0       0.25      0.20      0.22         5
+                      Condition: A             Not A
 
-avg / total       0.80      0.82      0.81        39
-('training time:', 0.003, 's')
+  Test says “A”       True positive (TP)   |   False positive (FP)
+                      ----------------------------------
+  Test says “Not A”   False negative (FN)  |    True negative (TN)
 
-Right of the bat you see that average time looks pretty good within the 80% range is something that I strive for in life. I will say that it’s detection model for identifying Non-POIs is higher this primary has to do with the fact that there is basically more Non-POIs for the computer to choose from then POIs. Essentially what this would report is with some precision an 89% chance of detecting a Non-POI within the data set. However, the Precision for Detecting a POIs within the Dataset is only 25%, this is why we needed to fine-tune our parameters se we could get a better scoring. 
+
+Recall is TP/(TP + FN) whereas precision is TP/(TP+FP). Within information retrieval we would like to identity as many relevant documents (POIs / NONPOIs). Secondly, we would like to have to avoid sorting through junk within the data set this is defined as the Precision. So essentially, a 43% precision and 66% recall is pretty okay. Meaning, within these metrics Given a positive example of a identifying a POI there is a 66% chance the classifier will detect it (RECALL) and Given a positive prediction from the classifier how likely is this going to be correct this is (PRECISION). 
+
+
 
 
