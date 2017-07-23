@@ -16,31 +16,16 @@ sys.path.append("../tools/")
 from feature_format import featureFormat, targetFeatureSplit
 from tester import dump_classifier_and_data
 
-### import classifiers, splitters, metrics
+### import classifiers,
 
-from sklearn.svm import SVC                                ### Support vector machine 
 from sklearn import tree                                   ### Decision Tree 
-from sklearn.naive_bayes import GaussianNB                 ### Naive Bayes
-from sklearn.neighbors import KNeighborsClassifier as knnc ### KNeighbors
 
-from sklearn import cross_validation                ### CV
-from sklearn.metrics import accuracy_score          ### Accuracy
-from sklearn.metrics import confusion_matrix        ### Confusion 
-from sklearn.metrics import precision_score         ### Precision 
-from sklearn.metrics import recall_score            ### Recall Score
-from sklearn.metrics import classification_report   ### report card
-from sklearn.grid_search import GridSearchCV        ### GridSearch           
-from sklearn.ensemble import ExtraTreesClassifier   ### Extra tree
-from sklearn.linear_model import RandomizedLasso    ### good for feature selection
-from sklearn.ensemble import RandomForestRegressor  ### goot for non-linear 
 
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
 
-features_list =  ['poi', 'total_stock_value', 'to_poi_ratio', 'restricted_ratio','exercised_ratio',
-                'long_term_incentive', 'from_poi_to_this_person','from_this_person_to_poi',
-                'from_messages', 'other', 'expenses','exercised_stock_options','salary_bonus_ratio']
+features_list =  ['poi', 'total_stock_value', 'to_poi_ratio', 'restricted_ratio','from_this_person_to_poi']
 
 # You will need to use more features
 
@@ -135,10 +120,10 @@ labels, features = targetFeatureSplit(data)
 ### generates the necessary .pkl files for validating your results.
 ### fixed value error for min_samples_split. Chose 0.99 not 1.
 
-clf = tree.DecisionTreeClassifier(class_weight="balanced", criterion="entropy", 
-                                 max_depth = 2, max_features = None, max_leaf_nodes = None, 
-                                 min_samples_leaf = 1, min_samples_split = 0.99, 
-                                 min_weight_fraction_leaf=0.0, presort = False, random_state=42, 
-                                 splitter= "best")
+clf = tree.DecisionTreeClassifier(class_weight='balanced', criterion='gini', max_depth=1,
+            max_features=None, max_leaf_nodes=None,
+            min_impurity_split=1e-07, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            presort=False, random_state=42, splitter='best')
 
 dump_classifier_and_data(clf, my_dataset, features_list)
