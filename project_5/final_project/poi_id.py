@@ -21,6 +21,10 @@ from tester import dump_classifier_and_data
 from sklearn import tree                                   ### Decision Tree 
 
 
+"""NOTE FOR GRADER: All work is within the python notebook file which is attached.
+   this poi_id.py is only my final result and does not reflect the given tasks below. 
+   Everything you need in regards to other aspects of the assignment is within the notebook."""
+
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
@@ -63,14 +67,14 @@ df.replace(0, np.nan, inplace= True)
 
 df['salary_bonus_ratio'] = df['salary'] / df['bonus']
 
-df['exercised_ratio']    = df['exercised_stock_options'] / df['total_stock_value']
+df['exercised_ratio'] = df['exercised_stock_options'] / df['total_stock_value']
 
-df['total_sp_ratio']     = df['total_payments'] / df['total_stock_value']
+df['total_sp_ratio'] = df['total_payments'] / df['total_stock_value']
 
-df['restricted_ratio']   = df['restricted_stock'] / df['total_stock_value']
+df['restricted_ratio'] = df['restricted_stock'] / df['total_stock_value']
 
 ### email features 
-df['to_poi_ratio']   = df['from_this_person_to_poi'] / df['from_messages']
+df['to_poi_ratio'] = df['from_this_person_to_poi'] / df['from_messages']
 
 df['from_poi_ratio'] = df["from_poi_to_this_person"] / df['to_messages']
 
@@ -90,6 +94,7 @@ data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
 
 ### Task 4: Try a varity of classifiers
+### LOOK IN NOTEBOOK
 ### Please name your classifier clf for easy export below.
 ### Note that if you want to do PCA or other multi-stage operations,
 ### you'll need to use Pipelines. For more info:
@@ -100,6 +105,7 @@ labels, features = targetFeatureSplit(data)
 # clf = GaussianNB()
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
+### LOOK IN NOTEBOOK
 ### using our testing script. Check the tester.py script in the final project
 ### folder for details on the evaluation method, especially the test_classifier
 ### function. Because of the small size of the dataset, the script uses
