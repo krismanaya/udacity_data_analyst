@@ -26,3 +26,12 @@ body.style('background-color', 'white');
 d3.select('body')
     .style('color', 'black')
     .style('background-color', 'white')
+
+
+// create chart
+d3.select('.chart')
+    .selectAll('div')   
+        .data(data)
+    .enter().append('div')
+        .style('width', function(d) {return d * 10 + 'px';})
+        .text(function(d) {return d;});
