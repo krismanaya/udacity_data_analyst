@@ -31,11 +31,12 @@ def mean(x):
         average = sum/float(len(x))
     return average
 
-def variance(x): 
+def variance(x,n): 
     sum = 0
     for i in x: 
-        sum += (i-mean(x))**2
-    return sum
+        summation += (i-mean(x))**2
+    variance = summation / (n-1)
+    return sum 
 
 def pooled_variance(x_1,x_2): 
     ss_1 = variance(x_1)
@@ -84,7 +85,7 @@ def standard_sample_error(x,n):
 
 def independent_standard_error(x_1,x_2,n_1,n_2): 
     s_1 = bessels_correction(x_1)
-    s_2 = bessels_correction(x_2)
+     s_2 = bessels_correction(x_2)
     return math.sqrt(s_1**2/float(n_1) + s_2**2/float(n_2))
 
 def corrected_standard_error(x_1,x_2,n_1,n_2): 
