@@ -4,16 +4,16 @@ The data was collected through the Kaggle website and consist information of twe
 
 ## Summary 
 
-the features that are explored within the data are the orginal air data, us viewers in millions, imdb rating, title and seasons. 
-withitn each bubble a toolbox appears which gives the read the necessary information of the show that includes the features outlined above. 
+the features that are explored within the data are: us viewers in millions, imdb rating, title and seasons. 
+within each bubble an interactive toolbox appears, which gives the reader the necessary information about the show. This includes the features outlined above. 
 
 ## Design 
 
-I wanted the viewer to be be whisked away into the land of the simpsons so I created colorized representations of the simpsons world. While the yellow is not a true representation of the simpsons skin color, it does however make it more palatable to the eyes. The visualized represention gives it a fun view of the simpsons world we known and love. 
+I wanted the viewer to be be whisked away into the land of the simpsons, so I created colorized representations of the simpsons world. While the yellow is not a true representation of the simpsons skin color, it does however make it more palatable to the eyes. The visualized represention gives it a fun view of the simpsons world we known and love. 
 
 ## Feedback 
 
-the feedback I was given was to center the logo and change it to black (the original log was white and top left). Secondly, the bubble size was measured along the z-axis in terms of us viwers by millions, however, this created to many large bubbles and was displeasing to the eyes. Third, I was asked to change the coloring within the tool-box so it creates a tone that is more equal to the backround color. Finally, within my first representation I choose to do a box plot however, the bubble plot within show a greater interactive approach with each episode. 
+the feedback I was given was to center the logo and change it to black (the original logo was white and top left). Secondly, the bubble size was measured along the z-axis in terms of us viwers by millions, however, this created to many large bubbles and was displeasing to the eyes. Third, I was asked to change the coloring within the tool-box so it creates a tone that is more equal to the backround color. Finally, within my first representation I choose to do a box plot however, the bubble plot within show a greater interactive approach with each episode. 
 
 ## Resources 
 
