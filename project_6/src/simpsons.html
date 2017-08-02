@@ -9,7 +9,6 @@
     .title {
       width: 100%;
       text-align: center;
-      padding: 40px;
     }
     circle.dimple-series-1 {
       fill: red;
@@ -18,6 +17,13 @@
     h2 {
       text-align: center;
     }
+
+    rect.dimple-tooltip {
+      
+      fill: #edd23b !important;
+
+    }
+
 
     body {
       background-color: #FCEFA7
@@ -32,7 +38,7 @@
 
           "use strict";
           var margin = 75,
-              width = 1400 - margin,
+              width = 2400 - margin,
               height = 600 - margin;
 
 
@@ -64,14 +70,13 @@
       /*
         Dimple.js Chart construction code
       */
-      // create a data set only with the golden years. 
-          // data = dimple.filterData(data, "season", ['1','2',
-          //        '3', '4','5','6','7','8','9','10']);
           var myChart = new dimple.chart(svg, data);
           var x = myChart.addTimeAxis("x", "original_air_date");
           x.tickFormat = "%Y"; 
           x.timeInterval = 1; 
+          x.title = 'Original Air Date'; 
           var y = myChart.addMeasureAxis("y", "us_viewers_in_millions");
+          y.title = 'US Viewers In Millions';
           var s = myChart.addSeries(['title', 'imdb_rating','us_viewers_in_millions','season'],dimple.plot.bubble);
 
           // make colors for bubbles
