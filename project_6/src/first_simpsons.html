@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+
+  <style> 
+
+    circle.dimple-series-1 {
+      fill: red;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+  </style>
+    <script type="text/javascript">
+      function draw(data) {
+      
+      /*
+        D3.js setup code
+      */
+
+          "use strict";
+          var margin = 75,
+              width = 2400 - margin,
+              height = 600 - margin;
+
+
+          // debugger; 
+          d3.select("body")
+            .append('h2');
+
+          var svg = d3.select("body")
+            .append("svg")
+              .attr("width", width + margin)
+              .attr("height", height + margin)
+            .append('g')
+                .attr('class','chart');
+        
+        // method for formatting the dates:
+        var format = d3.time.format("%Y-%m-%d");
+
+        // loop through the 'data' formatting the 'date' variable
+        // In the same loop, format the other variables as numeric 
+        // (which is what the '+' sign does)
+        data.forEach(function(d) {
+            d['original_air_date'] = format.parse(d['original_air_date']);
+            d['imdb_rating'] = +d['imdb_rating'];
+            d['us_viewers_in_millions'] = +d['us_viewers_in_millions'];
+            d['views'] = +d['views']
+            d['imdb_votes'] = +d['imdb_votes']
+            d['number_in_season'] = +d['number_in_season']
+               })
+      /*
+        Dimple.js Chart construction code
+      */
+          var myChart = new dimple.chart(svg, data);
+          var x = myChart.addTimeAxis("x", "original_air_date");
+          x.tickFormat = "%Y"; 
+          x.timeInterval = 1; 
+          x.title = 'Original Air Date'; 
+          var y = myChart.addMeasureAxis("y", "imdb_rating");
+          y.title = 'US Viewers In Millions';
+          var z = myChart.addMeasureAxis('z', 'us_viewers_in_millions');
+          var s = myChart.addSeries(['title', 'imdb_rating','us_viewers_in_millions','season'],dimple.plot.bubble);
+
+          // make colors for bubbles
+
+          var draw_chart = myChart.draw();
+        };
+      </script>
+  </head>
+<body>
+  <div class="title">
+    <img src="https://fontmeme.com/permalink/170802/0b41e388214423397d157ccb0c2b8041.png" alt="simpsons-font" border="0">
+  </div>
+  <script type="text/javascript">
+    /*
+      Use D3 (not dimple.js) to load the TSV file
+      and pass the contents of it to the draw function
+    */
+    d3.csv("simpsons_episodes.csv", draw);
+  </script>
+</body>
+</html>
