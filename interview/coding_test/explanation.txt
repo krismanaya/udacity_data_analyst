@@ -1,0 +1,30 @@
+question 1 - 
+
+This question through me off for a few hours. I didn’t really understand what exactly Udacity was asking me and then I realized that there were pieces of anagrams within the sentence structure. I was then able to solve the problem. 
+
+First, I wanted to check that my words are in fact anagrams of each other by checking the sorted length. While this isn’t the most technical way of solving the ‘is_anagram’ problem I figure it was good enough. 
+
+I then wanted to approach the string ’s’ by looking at bits of the word by the length of ’t’. I then gave it some boolean operation to check it it’s either True or False. The complexity time on this is O(n) because you are going through each iteration of the string at length ’t’. 
+
+
+question 2 - 
+
+to find the longest palidromic substring we need to split 'a' and then check each word. 
+I was only able to achieve Naive approach of O(n^3).There is obviously a better solution but I couldn’t wrap my head around it. It actually took me a long time to actually understand what the question was asking. 
+
+But, similarly, like question one, I essentially asked for chunks of the string like the question before. The problem came from a greedy choice within the question2(a) function. I essentially took which one was bigger and stored it and kept running it until there were not other contenders. I could not find another way to make this quicker. 
+
+
+question 3 - 
+
+I need a data structure to complete this problem, so I built a graph with edges and vertices. I asked my function to build a tree that only connects to itself and then check the condition within each vertex returning the minimum spanning tree. Since this question asked for two complexities of O(n^2) I believe the run time would be O(2n^2). 
+
+
+question 4 -
+
+the complexity for this problem I believe is O(nlogn), but i’m not so sure here. Basically, for my solution I search for the first node position and if that node is found it appends it onto the list node. Secondly, the other while loop searches for its child position if that position is found it asked if that child is contained within the list_node, if so it returns the second node or child of the root ancestor. 
+
+
+question 5 - 
+
+this last question was very confusing but essentially to get the linear run complexity time you create a loop which searches and stops at the midpoint of the linked list. Creating two points creates one current point and another pointer that is N elements behind the current pointer. When the current pointer reaches the end, the second pointer to the element N elements from the end of the list.  
