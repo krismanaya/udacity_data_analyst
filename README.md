@@ -1,4 +1,4 @@
-<img src="complete.png"/>
+<img src="complete.png" width="350" height="300"/>
 
 # udacity_data_analyst
 my projects for the Udacity bootcamp class. 
