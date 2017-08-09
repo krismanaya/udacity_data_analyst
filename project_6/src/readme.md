@@ -9,7 +9,7 @@ within each bubble an interactive toolbox appears, which gives the reader the ne
 
 ## Design 
 
-I wanted the viewer to be be whisked away into the land of the simpsons, so I created colorized representations of the simpsons world. While the yellow is not a true representation of the simpsons skin color, it does however make it more palatable to the eyes. The visualized represention gives it a fun view of the simpsons world we known and love. 
+I wanted the viewer to be be whisked away into the land of the simpsons, so I created colorized representations of the simpsons world. While the yellow is not a true representation of the simpsons skin color, it does however make it more palatable to the eyes. The visualized represention gives it a fun view of the simpsons world we known and love.  The reason why I chose a bubble plot is I wanted to create a toolbox feature that contained the title, rating and air date. It gives the reader something to connect with when the hoover over the bubble and se that possibly there favorite episode wasn't or was liked by a majority of the viewership population. The color hue does represent each season of the series. I added a legend at first but I am not that well versed in javascript and it looked tacky and out of place. I'm quite certain the toolbox hoover and my paragraph analysis above the graph will give the reader enough explantory data. 
 
 ## Feedback 
 
